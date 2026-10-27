@@ -8,8 +8,7 @@ RAW = Path(__file__).resolve().parents[1] / "data" / "raw"
 def load_kadaster() -> pd.DataFrame:
     df = pd.read_csv(RAW / "clean_kadaster_data.csv")
     df["Datum overdracht"] = pd.to_datetime(df["Datum overdracht"], errors="coerce")
-    df["Koopsom"] = pd.to_numeric(df["Koopsom"], errors="coerce")
-    return df
+    return df 
 
 #  for loading thefundM data, we use the pandas read_excel function to read the excel file and return a dataframe
 def load_fundM() -> pd.DataFrame:
