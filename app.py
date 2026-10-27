@@ -1,6 +1,10 @@
 import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pathlib import Path
+
+# Get the absolute path of the directory containing app.py (the repo root)
+ROOT_DIR = Path(__file__).resolve().parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 import streamlit as st
 import plotly.express as px
