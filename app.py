@@ -1,3 +1,7 @@
+import os
+st.write("CWD:", os.getcwd())
+st.write("Files here:", os.listdir("."))
+st.write("src exists:", os.path.exists("src"))
 import streamlit as st
 import plotly.express as px
 import pandas as pd
