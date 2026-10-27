@@ -11,7 +11,7 @@ def load_kadaster() -> pd.DataFrame:
     return df 
 
 #  for loading thefundM data, we use the pandas read_excel function to read the excel file and return a dataframe
-def load_fundM() -> pd.DataFrame:
+def load_funda() -> pd.DataFrame:
     return pd.read_excel(
         RAW / "funda_M_samen_met_buurten_data_2026-10-03.xlsx",
         sheet_name="Sheet1",

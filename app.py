@@ -1,16 +1,6 @@
-import sys
-from pathlib import Path
-
-# Get the absolute path of the directory containing app.py (the repo root)
-ROOT_DIR = Path(__file__).resolve().parent
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
-
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-import os                                    # <-- add this
-
 from src.load import load_kadaster, load_funda
 from src.clean import clean_funda, clean_kadaster
 from src.join import join_datasets
@@ -18,13 +8,6 @@ from src.metrics import price_stats, over_time
 
 st.set_page_config(page_title="Amsterdam Housing — Case 2", layout="wide")
 st.title("Amsterdam Housing Prices — Kadaster vs Funda")
-
-# --- TEMPORARY DEBUG (delete after diagnosing) ---
-st.write("CWD:", os.getcwd())
-st.write("Files here:", os.listdir("."))
-st.write("src exists:", os.path.exists("src"))
-st.write("src contents:", os.listdir("src") if os.path.exists("src") else "N/A")
-# --- END DEBUG ---
 
 @st.cache_data
 def get_kadaster():
@@ -38,11 +21,6 @@ def get_funda():
 def get_joined(kad, fun):
     return join_datasets(kad, fun)
 
-#  three error handeling cases:
-#  1. Funda file not yet in data/raw/ (FileNotFoundError
-#  2. Funda file missing a column (KeyError)
-#  3. No matching addresses found (joined dataframe is empty)
-#  makes it so that the app doesn't crash and gives the user a message about what went wrong
 kad = get_kadaster()
 
 tab1, tab2, tab3 = st.tabs(["Kadaster sales", "Funda listings", "Joined comparison"])
