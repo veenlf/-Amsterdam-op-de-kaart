@@ -1,10 +1,8 @@
-import os
-st.write("CWD:", os.getcwd())
-st.write("Files here:", os.listdir("."))
-st.write("src exists:", os.path.exists("src"))
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+import os                                    # <-- add this
+
 from src.load import load_kadaster, load_funda
 from src.clean import clean_funda, clean_kadaster
 from src.join import join_datasets
@@ -12,6 +10,13 @@ from src.metrics import price_stats, over_time
 
 st.set_page_config(page_title="Amsterdam Housing — Case 2", layout="wide")
 st.title("Amsterdam Housing Prices — Kadaster vs Funda")
+
+# --- TEMPORARY DEBUG (delete after diagnosing) ---
+st.write("CWD:", os.getcwd())
+st.write("Files here:", os.listdir("."))
+st.write("src exists:", os.path.exists("src"))
+st.write("src contents:", os.listdir("src") if os.path.exists("src") else "N/A")
+# --- END DEBUG ---
 
 @st.cache_data
 def get_kadaster():
