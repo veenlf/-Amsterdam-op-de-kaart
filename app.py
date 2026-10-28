@@ -106,18 +106,18 @@ with tab2:
                 fig = px.scatter_map(highlight_df, lat="Latitude", lon="Longitude", 
                                      size="Wonen", hover_name="Street Address", 
                                      color="Vraagprijs", color_continuous_scale="Viridis",
-                                     zoom=12, height=600)
+                                     zoom=11, height=600)
             else:
                 # HEATMAP MODE: Shows where listings are densely clustered
                 fig = px.density_map(map_df, lat="Latitude", lon="Longitude", 
                                      z="Vraagprijs", radius=15,
-                                     zoom=12, height=600,
+                                     zoom=11, height=600,
                                      color_continuous_scale="Inferno")
                                      
         fig.update_layout(
             map_style="carto-darkmatter", 
             margin={"r":0,"t":0,"l":0,"b":0},
-            map_bounds={"west": 4.7, "east": 5.05, "south": 52.25, "north": 52.45}
+            map_bounds={"west": 4.65, "east": 5.10, "south": 52.20, "north": 52.50}
         )
         st.plotly_chart(fig, use_container_width=True)
         
