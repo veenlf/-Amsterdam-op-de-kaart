@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from src.load import load_funda
 from src.clean import clean_funda, clean_cbs
@@ -73,14 +74,20 @@ with tab3:
             st.warning("No statistically significant difference found (p >= 0.05).")
             
         # Visualise the groups
-        fig = px.box(fun[fun['Title'].str.contains('Appartement|Huis', case=False, na=False)], 
-                     x='Title', y='price_per_m2', 
-                     title="Price per m²: Appartement vs Huis")
+    # Create a clean label for the X-axis
+        fun['Type'] = fun['Title'].apply(lambda x: 'Appartement' if 'Appartement' in str(x) else 'Huis')
+    
+    # Filter only Appartement and Huis
+        plot_df = fun[fun['Type'].isin(['Appartement', 'Huis'])]
+    
+        fig = px.box(plot_df, x='Type', y='price_per_m2', 
+                 title="Price per m²: Appartement vs Huis",
+                 color='Type')
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Not enough data to compare Appartement vs Huis.")
 
-    # --- Part 2: The CBS Trend ---
+#   The CBS Trend 
     st.markdown("---")
     st.markdown("### 2. Amsterdam Housing Stock (CBS) over Time")
     
