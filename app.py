@@ -144,7 +144,7 @@ with tab3:
     
     if len(expensive) > 0 and len(affordable) > 0:
         # 3. Run the T-test
-        stat, p_value = stats.ttest_ind(expensive, affordable, equal_var=False)
+        stat, p_value = ttest_ind(expensive, affordable, equal_var=False)
         
         st.markdown(f"**Top 10 Expensive Neighbourhoods:** {len(expensive)} listings, median €{expensive.median():,.0f}/m²")
         st.markdown(f"**Bottom 10 Cheapest Neighbourhoods:** {len(affordable)} listings, median €{affordable.median():,.0f}/m²")
