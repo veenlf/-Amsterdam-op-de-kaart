@@ -38,7 +38,7 @@ with tab1:
 with tab2:
     st.subheader("Funda listings — Geographic Distribution")
     try:
-        map_df = fun.dropna(subset=['Latitude', 'Longitude'])
+        map_df = fun.dropna(subset=['Latitude', 'Longitude', 'Wonen', 'Vraagprijs'])
         fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
                              color="Vraagprijs", size="Wonen",
                              hover_name="Street Address", 
