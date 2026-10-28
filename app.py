@@ -43,7 +43,8 @@ with tab2:
                              color="Vraagprijs", size="Wonen",
                              hover_name="Street Address", 
                              color_continuous_scale="Viridis",
-                             zoom=11, height=600)
+                             zoom=11, height=600,
+                             center={"lat": 52.3676, "lon": 4.9041})
         fig.update_layout(map_style="basic")
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig, use_container_width=True)
