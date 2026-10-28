@@ -12,9 +12,15 @@ def load_kadaster() -> pd.DataFrame:
 
 #  for loading thefundM data, we use the pandas read_excel function to read the excel file and return a dataframe
 def load_funda() -> pd.DataFrame:
+    candidates = list(RAW.glob("funda_M_*.xlsx"))
+    if not candidates:
+        raise FileNotFoundError(f"No funda_M_*.xlsx found in {RAW}")
+    
+    # Picks the newest file if there are multiple
+    path = sorted(candidates)[-1] 
+    
     return pd.read_excel(
-        RAW / "funda_M_samen_met_buurten_data_2026-10-03.xlsx",
+        path,
         sheet_name="Sheet1",
         header=0,
     )
-

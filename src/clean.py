@@ -1,14 +1,6 @@
 import pandas as pd
 
-def clean_funda(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    df = df.dropna(subset=["Street Address"])
-    df["Vraagprijs"] = pd.to_numeric(df["Vraagprijs"], errors="coerce")
-    df["Wonen"] = pd.to_numeric(df["Wonen"], errors="coerce")
-    df["price_per_m2"] = df["Vraagprijs"] / df["Wonen"]
-    df["Latitude"] = pd.to_numeric(df["Latitude"], errors="coerce")
-    df["Longitude"] = pd.to_numeric(df["Longitude"], errors="coerce")
-    return df
+
 
 def clean_kadaster(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -25,4 +17,14 @@ def clean_kadaster(df: pd.DataFrame) -> pd.DataFrame:
     # Step 3: add empty price_per_m2 column so we can join with Funda cleanly
     df["price_per_m2"] = float("nan")
 
+    return df
+
+def clean_funda(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df = df.dropna(subset=["Street Address"])
+    df["Vraagprijs"] = pd.to_numeric(df["Vraagprijs"], errors="coerce")
+    df["Wonen"] = pd.to_numeric(df["Wonen"], errors="coerce")
+    df["price_per_m2"] = df["Vraagprijs"] / df["Wonen"]
+    df["Latitude"] = pd.to_numeric(df["Latitude"], errors="coerce")
+    df["Longitude"] = pd.to_numeric(df["Longitude"], errors="coerce")
     return df
