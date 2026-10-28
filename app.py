@@ -38,15 +38,13 @@ with tab1:
 with tab2:
     st.subheader("Funda listings — Geographic Distribution")
     try:
-        # Filter out rows missing coordinates for the map
         map_df = fun.dropna(subset=['Latitude', 'Longitude'])
-        # Center map on Amsterdam
-        fig = px.scatter_mapbox(map_df, lat="Latitude", lon="Longitude", 
-                                color="Vraagprijs", size="Wonen",
-                                hover_name="Street Address", 
-                                color_continuous_scale="Viridis",
-                                zoom=11, height=600)
-        fig.update_layout(mapbox_style="carto-darkmatter")
+        fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
+                             color="Vraagprijs", size="Wonen",
+                             hover_name="Street Address", 
+                             color_continuous_scale="Viridis",
+                             zoom=11, height=600)
+        fig.update_layout(map_style="carto-darkmatter")
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
