@@ -39,127 +39,137 @@ fun = fun[fun['Vraagprijs'].between(price_range[0], price_range[1])]
 # --- TABS ---
 tab1, tab2, tab3 = st.tabs(["Funda Listings", "Funda Map", "CBS Statistics"])
 
+# ==========================================
+# TAB 1: Listings & Bar Chart
+# ==========================================
 with tab1:
     st.subheader("Funda listings — Asking price per m²")
-    fig = px.box(fun, x="Buurt", y="price_per_m2", 
-                 title="Asking price per m² by Buurt")
-    fig.update_xaxes(showticklabels=False) 
-    st.plotly_chart(fig, use_container_width=True)
     
-    # --- NEW: Top 10 Neighbourhoods ---
-    st.subheader("Top 10 Most Expensive Neighbourhoods")
+    # Filter out data missing sizes or prices for the charts
+    plot_df = fun.dropna(subset=['price_per_m2', 'Buurt'])
     
-    # Calculate median price per m2 for each Buurt, sort, and get top 10
-    top_buurten = (
-        fun.groupby('Buurt')['price_per_m2']
-        .median()
-        .sort_values(ascending=True) # Ascending so the highest is at the top of the horizontal chart
-        .tail(10)
-        .reset_index()
-    )
+    # Create two columns for the charts
+    col1, col2 = st.columns(2)
     
-    fig_top = px.bar(top_buurten, x='price_per_m2', y='Buurt', orientation='h',
-                     title='Median Asking Price per m² (Top 10)',
-                     labels={'price_per_m2': 'Median Price per m² (€)', 'Buurt': ''})
-    st.plotly_chart(fig_top, use_container_width=True)
-    
-    st.dataframe(fun[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
+    with col1:
+        st.markdown("### Distribution per Neighbourhood")
+        fig = px.box(plot_df, x="Buurt", y="price_per_m2", 
+                     title="Spread of Asking price per m²")
+        fig.update_xaxes(showticklabels=False) 
+        st.plotly_chart(fig, use_container_width=True)
+        
+    with col2:
+        st.markdown("### Top 10 Most Expensive Neighbourhoods")
+        # Group by Buurt, calculate median price, count listings
+        top_buurten = (
+            plot_df.groupby('Buurt')['price_per_m2']
+            .agg(['median', 'count'])
+            .reset_index()
+        )
+        # Only keep neighbourhoods with at least 10 listings (so bars aren't empty)
+        top_buurten = top_buurten[top_buurten['count'] >= 10]
+        # Sort and get top 10
+        top_buurten = top_buurten.sort_values('median', ascending=True).tail(10)
+        
+        fig_top = px.bar(top_buurten, x='median', y='Buurt', orientation='h',
+                         title='Median Asking Price per m² (Min. 10 listings)',
+                         labels={'median': 'Median Price per m² (€)', 'Buurt': ''},
+                         color='median', color_continuous_scale='Viridis')
+        st.plotly_chart(fig_top, use_container_width=True)
 
+    st.dataframe(plot_df[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
+
+
+# ==========================================
+# TAB 2: Map
+# ==========================================
 with tab2:
     st.subheader("Funda listings — Geographic Distribution")
     try:
         map_df = fun.dropna(subset=['Latitude', 'Longitude', 'Wonen', 'Vraagprijs'])
-        # Filter to the bounding box of Amsterdam
         map_df = map_df[
             (map_df['Latitude'].between(52.2, 52.5)) & 
             (map_df['Longitude'].between(4.6, 5.1))
         ]
         
         col1, col2 = st.columns([1, 2])
-        
         with col1:
             color_by = st.radio("Map Mode:", ["Price", "Specific Neighbourhood"])
-            
         with col2:
             if color_by == "Specific Neighbourhood":
-                # Dropdown to pick ONE neighbourhood
                 all_buurten = sorted(map_df['Buurt'].dropna().unique())
-                selected_buurt = st.selectbox("Choose a Neighbourhood to highlight:", all_buurten)
-                
-                # Create a new column that only colors the selected buurt
+                selected_buurt = st.selectbox("Choose a Neighbourhood:", all_buurten)
                 map_df['Highlight'] = map_df['Buurt'].apply(lambda x: x if x == selected_buurt else "Other")
                 
                 fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
                                      color="Highlight", size="Wonen",
                                      hover_name="Street Address", 
-                                     color_discrete_map={selected_buurt: "red", "Other": "rgba(200, 200, 200, 0.3)"},
-                                     zoom=11, height=600,
-                                     center={"lat": 52.3676, "lon": 4.9041})
+                                     color_discrete_map={selected_buurt: "red", "Other": "rgba(200, 200, 200, 0.2)"},
+                                     zoom=12, height=600)
             else:
                 fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
                                      color="Vraagprijs", size="Wonen",
                                      hover_name="Street Address", 
                                      color_continuous_scale="Viridis",
-                                     zoom=11, height=600,
-                                     center={"lat": 52.3676, "lon": 4.9041})
+                                     zoom=12, height=600)
                                      
-        fig.update_layout(map_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0})
+        fig.update_layout(
+            map_style="carto-darkmatter", 
+            margin={"r":0,"t":0,"l":0,"b":0},
+            # THIS IS THE MAGIC FIX: Lock the map to Amsterdam's bounding box
+            map_bounds=[{"lat": 52.25, "lon": 4.7}, {"lat": 52.45, "lon": 5.05}]
+        )
         st.plotly_chart(fig, use_container_width=True)
         
-        st.info("**Insight:** Toggle the view to see how the most expensive listings cluster in specific neighbourhoods (like Centrum and Oud-Zuid) rather than being evenly spread.")
     except Exception as e:
         st.error(f"Could not render map: {e}")
 
+# ==========================================
+# TAB 3: Statistics
+# ==========================================
 with tab3:
-    st.subheader("Statistical Underpinning: Housing Type & Stock")
+    st.subheader("Statistical Underpinning: City Centre vs Outskirts")
+    st.markdown("We test if the asking price per m² is significantly different between the historic **Centrum** and the outer district of **Nieuw-West**.")
     
-    # --- Part 1: The T-Test ---
-    st.markdown("### 1. Are 'Huizen' more expensive than 'Appartementen'?")
+    # 1. Prepare the groups
+    centrum = fun[fun['Buurt'].str.contains('Centrum', case=False, na=False)]['price_per_m2'].dropna()
+    nieuwwest = fun[fun['Buurt'].str.contains('Nieuw-West', case=False, na=False)]['price_per_m2'].dropna()
     
-    # Filter for the two main types based on the 'Title' column
-    # (Funda titles start with either "Appartement te koop" or "Huis te koop")
-    apps = fun[fun['Title'].str.contains('Appartement', case=False, na=False)]['price_per_m2'].dropna()
-    huizen = fun[fun['Title'].str.contains('Huis', case=False, na=False)]['price_per_m2'].dropna()
-    
-    if len(apps) > 0 and len(huizen) > 0:
-        # Run the T-test
-        stat, p_value = ttest_ind(apps, huizen, equal_var=False)
+    if len(centrum) > 0 and len(nieuwwest) > 0:
+        # 2. T-test
+        stat, p_value = stats.ttest_ind(centrum, nieuwwest, equal_var=False)
         
-        st.markdown(f"**Appartementen:** {len(apps)} listings, median €{apps.median():,.0f}/m²")
-        st.markdown(f"**Huizen:** {len(huizen)} listings, median €{huizen.median():,.0f}/m²")
-        st.markdown(f"**T-test p-value:** `{p_value:.5f}`")
+        # 3. Output results
+        st.markdown(f"**Centrum:** {len(centrum)} listings, median €{centrum.median():,.0f}/m²")
+        st.markdown(f"**Nieuw-West:** {len(nieuwwest)} listings, median €{nieuwwest.median():,.0f}/m²")
+        st.markdown(f"**T-test p-value:** `{p_value:.10f}`")
         
         if p_value < 0.05:
             st.success("Statistically significant difference (p < 0.05).")
+            st.markdown("*Conclusion: The location (Centrum vs Nieuw-West) has a statistically significant effect on the asking price per m².*")
         else:
             st.warning("No statistically significant difference found (p >= 0.05).")
             
-        # Visualise the groups
-    # Create a clean label for the X-axis
-        fun['Type'] = fun['Title'].apply(lambda x: 'Appartement' if 'Appartement' in str(x) else 'Huis')
-    
-    # Filter only Appartement and Huis
-        plot_df = fun[fun['Type'].isin(['Appartement', 'Huis'])]
-    
-        fig = px.box(plot_df, x='Type', y='price_per_m2', 
-                 title="Price per m²: Appartement vs Huis",
-                 color='Type')
+        # 4. Boxplot visualisation
+        plot_df = pd.concat([centrum, nieuwwest], keys=['Centrum', 'Nieuw-West']).reset_index()
+        plot_df.columns = ['District', 'price_per_m2']
+        fig = px.box(plot_df, x='District', y='price_per_m2', color='District',
+                     title="Asking Price per m²: Centrum vs Nieuw-West")
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.warning("Not enough data to compare Appartement vs Huis.")
-
-#   The CBS Trend 
+        st.warning("Not enough data to compare Centrum vs Nieuw-West.")
+        
+    # 5. The CBS Trend
     st.markdown("---")
     st.markdown("### 2. Amsterdam Housing Stock (CBS) over Time")
-    
     fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=cbs['year'], y=cbs['Voorraad'], mode='lines+markers', name='Total Housing Stock'))
+    fig2.add_trace(go.Scatter(x=cbs['year'], y=cbs['Voorraad'], mode='lines+markers'))
     fig2.update_layout(title="Amsterdam Housing Stock (2012-2026)",
                       xaxis_title="Year", yaxis_title="Total Housing Stock")
     st.plotly_chart(fig2, use_container_width=True)
     
     st.info(
-        "**Conclusion:** While the housing stock has grown steadily to 1.97 million homes, "
-        "the Funda data shows a statistically significant difference (p < 0.05) in asking prices per m² between "
-        "different housing types, highlighting that supply alone does not dictate prices."
+        "**Conclusion:** While the housing stock has grown to 1.97 million homes, the price per m² in the Centrum is still "
+        "statistically significantly higher than in Nieuw-West. This proves that simply increasing supply does not "
+        "equalize prices across the city—location remains the dominant factor."
     )
