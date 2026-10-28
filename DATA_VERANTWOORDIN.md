@@ -6,18 +6,14 @@ Herkomst: Verstrekt door de docent. Bevat 6.864 listings.
 
 Bewerking: Rijen zonder straatnaam of coördinaten verwijderd. Prijzen ("Onbekend") omgezet naar NaN. Prijs per m² berekend (Vraagprijs / Wonen).
 
-Bron 2: Kadaster (Verkopen)
+Bron 2: CBS Woningvoorraad
 
-Bestand: clean_kadaster_data.csv
+Endpoint: https://opendata.cbs.nl/ODataApi/OData/83704NED
 
-Herkomst: Verstrekt door de docent.
+Fetched via requests.get() in fetch_cbs.py on [date].
 
-Bewerking: Tekst in de Koopsom kolom (zoals "Kadastralegrootte...") verwijderd via Regex. Rijen met ongeldige GPS-coördinaten (Latitude buiten 52.2-52.5) verwijderd.
+Filtered to Regio = Amsterdam, years 2012–2026.
 
-Samenvoeging (Merge)
+Joined to Funda at the municipality level (Amsterdam), producing N rows for statistical analysis.
 
-De twee datasets zijn samengevoegd op basis van een zelfgemaakte string-sleutel: straatnaam|huisnummer.
-
-Om suffixen (zoals -A, -B) te negeren, is er een Regex gebruikt om alleen het basisnummer te pakken.
-
-Resultaat: [Vul hier in hoeveel matches je had op basis van je echte Kadaster-data].
+Limitation: CBS data is municipality-level, not buurt-level, so spatial correlation with Funda buurten is approximate.
