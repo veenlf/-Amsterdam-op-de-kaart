@@ -69,28 +69,41 @@ with tab2:
     st.subheader("Funda listings — Geographic Distribution")
     try:
         map_df = fun.dropna(subset=['Latitude', 'Longitude', 'Wonen', 'Vraagprijs'])
+        # Filter to the bounding box of Amsterdam
+        map_df = map_df[
+            (map_df['Latitude'].between(52.2, 52.5)) & 
+            (map_df['Longitude'].between(4.6, 5.1))
+        ]
         
-        # Dropdown to choose what the map colors by
-        color_by = st.selectbox("Color listings by:", ["Vraagprijs", "Buurt"])
+        col1, col2 = st.columns([1, 2])
         
-        # If coloring by neighbourhood, we use a categorical map
-        if color_by == "Buurt":
-            fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
-                                 color=color_by, size="Wonen",
-                                 hover_name="Street Address", 
-                                 zoom=11, height=600,
-                                 center={"lat": 52.3676, "lon": 4.9041})
-        else:
-            # If coloring by price, use the continuous Viridis scale
-            fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
-                                 color=color_by, size="Wonen",
-                                 hover_name="Street Address", 
-                                 color_continuous_scale="Viridis",
-                                 zoom=11, height=600,
-                                 center={"lat": 52.3676, "lon": 4.9041})
-                                 
-        fig.update_layout(map_style="carto-darkmatter")
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+        with col1:
+            color_by = st.radio("Map Mode:", ["Price", "Specific Neighbourhood"])
+            
+        with col2:
+            if color_by == "Specific Neighbourhood":
+                # Dropdown to pick ONE neighbourhood
+                all_buurten = sorted(map_df['Buurt'].dropna().unique())
+                selected_buurt = st.selectbox("Choose a Neighbourhood to highlight:", all_buurten)
+                
+                # Create a new column that only colors the selected buurt
+                map_df['Highlight'] = map_df['Buurt'].apply(lambda x: x if x == selected_buurt else "Other")
+                
+                fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
+                                     color="Highlight", size="Wonen",
+                                     hover_name="Street Address", 
+                                     color_discrete_map={selected_buurt: "red", "Other": "rgba(200, 200, 200, 0.3)"},
+                                     zoom=11, height=600,
+                                     center={"lat": 52.3676, "lon": 4.9041})
+            else:
+                fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
+                                     color="Vraagprijs", size="Wonen",
+                                     hover_name="Street Address", 
+                                     color_continuous_scale="Viridis",
+                                     zoom=11, height=600,
+                                     center={"lat": 52.3676, "lon": 4.9041})
+                                     
+        fig.update_layout(map_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig, use_container_width=True)
         
         st.info("**Insight:** Toggle the view to see how the most expensive listings cluster in specific neighbourhoods (like Centrum and Oud-Zuid) rather than being evenly spread.")
