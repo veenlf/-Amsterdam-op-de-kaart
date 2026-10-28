@@ -116,8 +116,6 @@ with tab2:
         fig.update_layout(
             map_style="carto-darkmatter", 
             margin={"r":0,"t":0,"l":0,"b":0},
-            # THIS IS THE MAGIC FIX: Lock the map to Amsterdam's bounding box
-            map_bounds=[{"lat": 52.25, "lon": 4.7}, {"lat": 52.45, "lon": 5.05}]
         )
         st.plotly_chart(fig, use_container_width=True)
         
