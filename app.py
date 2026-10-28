@@ -87,41 +87,46 @@ with tab2:
     st.subheader("Funda listings — Geographic Distribution")
     try:
         map_df = fun.dropna(subset=['Latitude', 'Longitude', 'Wonen', 'Vraagprijs'])
+        # Filter to the bounding box of Amsterdam
         map_df = map_df[
             (map_df['Latitude'].between(52.2, 52.5)) & 
             (map_df['Longitude'].between(4.6, 5.1))
         ]
         
         col1, col2 = st.columns([1, 2])
+        
         with col1:
             color_by = st.radio("Map Mode:", ["Price", "Specific Neighbourhood"])
+            
         with col2:
             if color_by == "Specific Neighbourhood":
+                # Dropdown to pick ONE neighbourhood
                 all_buurten = sorted(map_df['Buurt'].dropna().unique())
-                selected_buurt = st.selectbox("Choose a Neighbourhood:", all_buurten)
+                selected_buurt = st.selectbox("Choose a Neighbourhood to highlight:", all_buurten)
+                
+                # Create a new column that only colors the selected buurt
                 map_df['Highlight'] = map_df['Buurt'].apply(lambda x: x if x == selected_buurt else "Other")
                 
                 fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
                                      color="Highlight", size="Wonen",
                                      hover_name="Street Address", 
-                                     color_discrete_map={selected_buurt: "red", "Other": "rgba(200, 200, 200, 0.2)"},
-                                     zoom=12, height=600)
+                                     color_discrete_map={selected_buurt: "red", "Other": "rgba(200, 200, 200, 0.3)"},
+                                     zoom=11, height=600,
+                                     center={"lat": 52.3676, "lon": 4.9041})
             else:
                 fig = px.scatter_map(map_df, lat="Latitude", lon="Longitude", 
                                      color="Vraagprijs", size="Wonen",
                                      hover_name="Street Address", 
                                      color_continuous_scale="Viridis",
-                                     zoom=12, height=600)
+                                     zoom=11, height=600,
+                                     center={"lat": 52.3676, "lon": 4.9041})
                                      
-        fig.update_layout(
-            map_style="carto-darkmatter", 
-            margin={"r":0,"t":0,"l":0,"b":0},
-        )
+        fig.update_layout(map_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig, use_container_width=True)
         
+        st.info("**Insight:** Toggle the view to see how the most expensive listings cluster in specific neighbourhoods (like Centrum and Oud-Zuid) rather than being evenly spread.")
     except Exception as e:
         st.error(f"Could not render map: {e}")
-
 # ==========================================
 # TAB 3: Statistics
 # ==========================================
