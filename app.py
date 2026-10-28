@@ -44,7 +44,7 @@ with tab2:
                              hover_name="Street Address", 
                              color_continuous_scale="Viridis",
                              zoom=11, height=600)
-        fig.update_layout(map_style="carto-darkmatter")
+        fig.update_layout(map_style="basic")
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
