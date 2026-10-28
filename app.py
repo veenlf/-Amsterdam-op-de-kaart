@@ -117,7 +117,7 @@ with tab2:
         fig.update_layout(
             map_style="carto-darkmatter", 
             margin={"r":0,"t":0,"l":0,"b":0},
-            map_bounds=[{"lat": 52.25, "lon": 4.7}, {"lat": 52.45, "lon": 5.05}]
+            map_bounds={"west": 4.7, "east": 5.05, "south": 52.25, "north": 52.45}
         )
         st.plotly_chart(fig, use_container_width=True)
         
@@ -157,8 +157,14 @@ with tab3:
             st.warning("No statistically significant difference found (p >= 0.05).")
             
         # 4. Boxplot visualisation
-        plot_df = pd.concat([expensive, affordable], keys=['Top 10 Expensive', 'Bottom 10 Cheapest']).reset_index()
-        plot_df.columns = ['Group', 'price_per_m2']
+              # 4. Boxplot visualisation
+        plot_df = pd.concat(
+            [expensive, affordable], 
+            keys=['Top 10 Expensive', 'Bottom 10 Cheapest'], 
+            names=['Group', 'Index']
+        ).reset_index()
+        # Now select only the columns we need for the plot
+        plot_df = plot_df[['Group', 'price_per_m2']]
         fig = px.box(plot_df, x='Group', y='price_per_m2', color='Group',
                      title="Asking Price per m²: Expensive vs Cheapest Neighbourhoods",
                      color_discrete_sequence=['#FF4B4B', '#3D9BFF'])
