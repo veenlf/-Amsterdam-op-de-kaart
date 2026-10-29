@@ -117,7 +117,8 @@ with tab2:
         fig.update_layout(
             map_style="carto-darkmatter", 
             margin={"r":0,"t":0,"l":0,"b":0},
-            map_bounds={"west": 4.65, "east": 5.10, "south": 52.20, "north": 52.50}
+            map_center={"lat": 52.3676, "lon": 4.9041}, # Centers exactly on Amsterdam
+            map_zoom=10.5 # Zooms out just enough to see the whole city and the ring road
         )
         st.plotly_chart(fig, use_container_width=True)
         
@@ -126,9 +127,6 @@ with tab2:
         st.error(f"Could not render map: {e}")
 import scipy.stats as stats # Add this to your top-level imports
 
-# ==========================================
-# TAB 3: Statistics
-# ==========================================
 # ==========================================
 # TAB 3: Statistics
 # ==========================================
