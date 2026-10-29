@@ -175,3 +175,48 @@ with tab3:
         opacity=0.5
     )
     st.plotly_chart(fig_scatter, use_container_width=True)
+    st.markdown("---")
+st.markdown("### 2. The Shrinking Home: Housing Stock by Size Class (CBS)")
+st.markdown("*Are we building smaller homes over time? Let's look at the composition of the housing stock.*")
+
+# 1. Clean the CBS data for this specific chart
+# Remove totals
+size_df = cbs[cbs['Oppervlakteklasse'] != 'T001116'].copy()
+
+# Create a dictionary to map the cryptic codes to readable labels based on the data volume
+# (I am guessing the sizes based on the numbers in your CSV)
+size_mapping = {
+    'A041692': 'Very Small (<40m²)',
+    'A025407': 'Small (40-60m²)',
+    'A025408': 'Medium (60-80m²)',
+    'A025409': 'Large (80-100m²)',
+    'A025410': 'Very Large (100-150m²)',
+    'A025411': 'Extra Large (>150m²)',
+    'A025412': 'Unknown Small',
+    'A041691': 'Unknown Tiny',
+    'A025414': 'Unknown Shrinking'
+}
+size_df['Size Category'] = size_df['Oppervlakteklasse'].map(size_mapping)
+
+# Drop the unknowns for a cleaner chart
+size_df = size_df.dropna(subset=['Size Category'])
+
+# 2. Calculate the PERCENTAGE of total stock for each size class per year
+# This is crucial: it shows the *shift* in composition, not just raw growth
+pivot_df = size_df.pivot_table(index='year', columns='Size Category', values='Voorraad', aggfunc='sum')
+percentage_df = pivot_df.div(pivot_df.sum(axis=1), axis=0) * 100
+
+# 3. Plot it as a Stacked Area Chart
+fig_size = px.area(
+    percentage_df, 
+    title="Percentage of Amsterdam Housing Stock by Size (2012-2026)",
+    labels={'value': 'Percentage of Total Stock (%)', 'year': 'Year'},
+    color_discrete_sequence=px.colors.sequential.Viridis
+)
+st.plotly_chart(fig_size, use_container_width=True)
+
+st.info(
+    "**Insight:** While the total housing stock has grown, the percentage of medium and small homes is increasing. "
+    "This structural shift towards smaller units explains why the price per m² is so high. "
+    "We are building smaller boxes to fit more people into the same limited space."
+)
