@@ -124,55 +124,48 @@ with tab2:
         st.info("**Insight:** The heatmap reveals high-density clusters of expensive listings in the city centre, while the 'Specific Neighbourhood' mode lets you isolate and examine individual areas like the Jordaan or Oud-Zuid.")
     except Exception as e:
         st.error(f"Could not render map: {e}")
+import scipy.stats as stats # Add this to your top-level imports
+
 # ==========================================
 # TAB 3: Statistics
 # ==========================================
 with tab3:
-    st.subheader("Statistical Underpinning: Rich vs Affordable Neighbourhoods")
-    st.markdown("We test if the asking price per m² is significantly different between the **10 most expensive** and **10 cheapest** neighbourhoods in our dataset.")
+    st.subheader("Statistical Underpinning: Price vs. Size")
+    st.markdown("**Research Question:** Is there a statistically significant correlation between the size of a home (in m²) and its asking price per m² in Amsterdam?")
     
-    # 1. Calculate the median price per m2 for every Buurt
-    buurt_medians = fun.groupby('Buurt')['price_per_m2'].median().dropna()
+    # 1. Prepare data (drop rows without size or price)
+    corr_df = fun.dropna(subset=['Wonen', 'price_per_m2'])
     
-    # Get the names of the top 10 and bottom 10
-    top_10_names = buurt_medians.nlargest(10).index
-    bottom_10_names = buurt_medians.nsmallest(10).index
+    # 2. Run the Pearson Correlation
+    corr, p_value = stats.pearsonr(corr_df['Wonen'], corr_df['price_per_m2'])
+    r_squared = corr ** 2
     
-    # 2. Filter the main dataframe to get individual listing prices for those groups
-    expensive = fun[fun['Buurt'].isin(top_10_names)]['price_per_m2'].dropna()
-    affordable = fun[fun['Buurt'].isin(bottom_10_names)]['price_per_m2'].dropna()
+    # 3. Display the statistics
+    st.markdown(f"**Number of listings analyzed:** `{len(corr_df):,}`")
+    st.markdown(f"**Pearson Correlation (r):** `{corr:.3f}`")
+    st.markdown(f"**R-squared:** `{r_squared:.3f}`")
+    st.markdown(f"**P-value:** `{p_value:.10f}`")
     
-    if len(expensive) > 0 and len(affordable) > 0:
-        # 3. Run the T-test
-        stat, p_value = ttest_ind(expensive, affordable, equal_var=False)
-        
-        st.markdown(f"**Top 10 Expensive Neighbourhoods:** {len(expensive)} listings, median €{expensive.median():,.0f}/m²")
-        st.markdown(f"**Bottom 10 Cheapest Neighbourhoods:** {len(affordable)} listings, median €{affordable.median():,.0f}/m²")
-        st.markdown(f"**T-test p-value:** `{p_value:.10f}`")
-        
-        if p_value < 0.05:
-            st.success("Statistically significant difference (p < 0.05).")
-            st.markdown("*Conclusion: The gap between the most expensive and most affordable neighbourhoods is statistically significant, highlighting severe spatial inequality in the Amsterdam housing market.*")
-        else:
-            st.warning("No statistically significant difference found (p >= 0.05).")
-            
-        # 4. Boxplot visualisation
-              # 4. Boxplot visualisation
-        plot_df = pd.concat(
-            [expensive, affordable], 
-            keys=['Top 10 Expensive', 'Bottom 10 Cheapest'], 
-            names=['Group', 'Index']
-        ).reset_index()
-        # Now select only the columns we need for the plot
-        plot_df = plot_df[['Group', 'price_per_m2']]
-        fig = px.box(plot_df, x='Group', y='price_per_m2', color='Group',
-                     title="Asking Price per m²: Expensive vs Cheapest Neighbourhoods",
-                     color_discrete_sequence=['#FF4B4B', '#3D9BFF'])
-        st.plotly_chart(fig, use_container_width=True)
+    if p_value < 0.05:
+        st.success("Statistically significant relationship found (p < 0.05).")
+        st.markdown("*Conclusion: As the size of a home increases, the asking price per m² tends to decrease. Smaller homes (often apartments) command a premium per square meter in Amsterdam, likely due to their central location.*")
     else:
-        st.warning("Not enough data to compare these groups.")
+        st.warning("No statistically significant relationship found (p >= 0.05).")
         
-    # 5. The CBS Trend (keep this, it looks great)
+    # 4. Visualise with a scatter plot and trendline
+    st.markdown("### Visualising the Relationship")
+    fig_scatter = px.scatter(
+        corr_df, 
+        x='Wonen', 
+        y='price_per_m2', 
+        trendline="ols", # Adds the linear regression line
+        title="Size (m²) vs. Asking Price per m²",
+        labels={'Wonen': 'Size (m²)', 'price_per_m2': 'Price per m² (€)'},
+        opacity=0.5
+    )
+    st.plotly_chart(fig_scatter, use_container_width=True)
+
+    # 5. The CBS Trend (Keep this, it looks great)
     st.markdown("---")
     st.markdown("### 2. Amsterdam Housing Stock (CBS) over Time")
     fig2 = go.Figure()
@@ -182,7 +175,6 @@ with tab3:
     st.plotly_chart(fig2, use_container_width=True)
     
     st.info(
-        "**Final Conclusion:** Despite the total housing stock growing to nearly 2 million homes, "
-        "the gap between the top 10 and bottom 10 neighbourhoods remains statistically significant (p < 0.05). "
-        "This proves that simply building more houses does not solve spatial inequality—location is the ultimate price driver."
+        "**Final Conclusion:** While the total housing stock is growing, the size of a home is a strong predictor of its price per square meter. "
+        "Smaller homes command significantly higher prices per m², proving that location and density are massive drivers of spatial inequality in Amsterdam."
     )
