@@ -128,114 +128,55 @@ with tab2:
 import scipy.stats as stats # Add this to your top-level imports
 
 # ==========================================
-# TAB 3: Statistics
+# TAB 3: Statistics & Geography
 # ==========================================
 with tab3:
-    st.subheader("Statistical Underpinning: Price vs. Size")
-    st.markdown("**Research Question:** Is there a statistically significant correlation between the size of a home (in m²) and its asking price per m² in Amsterdam?")
+    st.subheader("Statistical Analysis: The Value of Public Transport")
+    st.markdown("**Research Question:** Does proximity to a tram/metro stop increase the price per m²? And is that just because it's close to the center?")
     
-    # 1. Prepare data (drop rows without size or price)
-    corr_df = fun.dropna(subset=['Wonen', 'price_per_m2'])
+    # 1. Prepare the data (using the distances we calculated)
+    # Make sure you loaded 'valid_houses' with distances in your get_data() function!
+    plot_df = fun.dropna(subset=['price_per_m2', 'dist_to_stop_km', 'dist_to_center_km']).copy()
     
-    # Filter out extreme outliers (e.g., > 500m2) to make the trend clearer
-    corr_df = corr_df[corr_df['Wonen'] <= 500]
+    # 2. Create distance bands for the visual
+    bins = [0, 0.3, 0.6, 1.0, 2.0, 10.0]
+    labels = ['< 300m', '300m - 600m', '600m - 1km', '1km - 2km', '> 2km']
+    plot_df['Distance Band'] = pd.cut(plot_df['dist_to_stop_km'], bins=bins, labels=labels)
     
-    # 2. Run the Pearson Correlation
-    corr, p_value = stats.pearsonr(corr_df['Wonen'], corr_df['price_per_m2'])
-    r_squared = corr ** 2
+    # 3. Boxplot to visualize the raw effect
+    fig_box = px.box(plot_df, x='Distance Band', y='price_per_m2', 
+                     title="Price per m² by Distance to Nearest Tram/Metro Stop",
+                     color='Distance Band',
+                     color_discrete_sequence=px.colors.sequential.Viridis)
+    st.plotly_chart(fig_box, use_container_width=True)
     
-    # 3. Display the statistics with explanations
-    st.markdown(f"**Number of listings analyzed:** `{len(corr_df):,}`")
+    # 4. The Regression (The "Denkwerk")
+    st.markdown("### Multiple Regression: Controlling for the City Center")
+    st.markdown("If being close to the center is the *only* reason for high prices, the 'distance to stop' effect will disappear when we add 'distance to center' to the model.")
     
-    col_stat1, col_stat2, col_stat3 = st.columns(3)
-    col_stat1.metric("Correlation (r)", f"{corr:.3f}")
-    col_stat2.metric("R-squared (R²)", f"{r_squared:.3f}")
-    col_stat3.metric("P-value", f"{p_value:.10f}")
+    import statsmodels.formula.api as smf
+    formula = "price_per_m2 ~ dist_to_stop_km + dist_to_center_km"
+    model = smf.ols(formula, data=plot_df).fit()
     
-    if p_value < 0.05:
-        st.success("Statistically significant relationship found (p < 0.05).")
+    # Display the regression table
+    st.text(model.summary().tables[1])
+    
+    # Extract the p-value for the stop distance
+    p_val_stop = model.pvalues['dist_to_stop_km']
+    
+    if p_val_stop < 0.05:
+        st.success("**Conclusion:** Even when we control for the distance to the city center, the distance to a transport stop remains statistically significant. This proves that public transport accessibility has its own intrinsic value.")
+    else:
+        st.warning("**Conclusion:** Once we control for distance to the center, the distance to a transport stop is no longer significant. This suggests that the 'tram premium' is actually just a 'center premium'.")
         
-        # THIS IS THE EXPLANATION YOU ASKED FOR
-        st.markdown(f"""
-        **What does this mean?**
-        *   **The P-value** tells us this relationship is mathematically real and not a coincidence.
-        *   **The R-squared ({r_squared:.3f})** tells us that size *only explains about {r_squared*100:.1f}%* of the price per m². 
-        *   **Conclusion:** While larger homes have a slightly lower price per m², the size of the house is *not* the main driver of the price. You are paying for **location**, not just space. A small 50m² apartment in the Jordaan is vastly more expensive per m² than a 150m² house in Nieuw-West.
-        """)
-        
-    # 4. Visualise with a scatter plot and trendline
-    st.markdown("### Visualising the Relationship")
-    fig_scatter = px.scatter(
-        corr_df, 
-        x='Wonen', 
-        y='price_per_m2', 
-        trendline="ols", 
-        title="Size (m²) vs. Asking Price per m² (Filtered < 500m²)",
-        labels={'Wonen': 'Size (m²)', 'price_per_m2': 'Price per m² (€)'},
-        opacity=0.5
-    )
-    st.plotly_chart(fig_scatter, use_container_width=True)
-
-
-    st.markdown("---")
-    st.markdown("### 2. The Shrinking Home: Housing Stock by Size Class (CBS)")
-    st.markdown("*Are we building smaller homes over time? Let's look at the composition of the housing stock.*")
-
-    # 1. Load raw data directly to guarantee the column exists
-    raw_cbs = pd.read_csv("data/raw/cbs_woningvoorraad_amsterdam.csv")
-    
-    # Clean it just for this chart
-    raw_cbs['year'] = raw_cbs['Perioden'].astype(str).str[:4].astype(int)
-    raw_cbs = raw_cbs.rename(columns={'BeginstandWoningvoorraad_1': 'Voorraad'})
-    
-    # Remove totals
-    size_df = raw_cbs[raw_cbs['Oppervlakteklasse'] != 'T001116'].copy()
-
-    # Create a dictionary to map the cryptic codes
-    size_mapping = {
-        'A041692': 'Very Small (<40m²)',
-        'A025407': 'Small (40-60m²)',
-        'A025408': 'Medium (60-80m²)',
-        'A025409': 'Large (80-100m²)',
-        'A025410': 'Very Large (100-150m²)',
-        'A025411': 'Luxury (>150m²)',
-        'A025412': 'Unknown Small',
-        'A041691': 'Unknown Tiny',
-        'A025414': 'Unknown Shrinking'
-    }
-    size_df['Size Category'] = size_df['Oppervlakteklasse'].map(size_mapping)
-
-    # Drop the unknowns for a cleaner chart
-    size_df = size_df.dropna(subset=['Size Category'])
-
-    # 2. Calculate the PERCENTAGE of total stock for each size class per year
-    pivot_df = size_df.pivot_table(index='year', columns='Size Category', values='Voorraad', aggfunc='sum')
-    percentage_df = pivot_df.div(pivot_df.sum(axis=1), axis=0) * 100
-
-    # 3. Plot it as a Stacked Area Chart
-    fig_size = px.area(
-        percentage_df, 
-        title="Composition of Amsterdam Housing Stock by Size (2012-2026)",
-        labels={'value': 'Percentage of Total Stock (%)', 'year': 'Year'},
-        color_discrete_sequence=px.colors.sequential.Viridis
-    )
-    st.plotly_chart(fig_size, use_container_width=True)
-
-    # 4. Add the "Punchline" metrics
-    col1, col2 = st.columns(2)
-    
-    # Calculate growth for total (using your original 'cbs' dataframe)
-    total_growth = ((cbs['Voorraad'].iloc[-1] - cbs['Voorraad'].iloc[0]) / cbs['Voorraad'].iloc[0]) * 100
-    
-    # Calculate growth for luxury (using the newly cleaned raw data)
-    luxury_df = size_df[size_df['Oppervlakteklasse'] == 'A025411']
-    lux_growth = ((luxury_df['Voorraad'].iloc[-1] - luxury_df['Voorraad'].iloc[0]) / luxury_df['Voorraad'].iloc[0]) * 100
-    
-    col1.metric("Total Housing Stock Growth", f"+{total_growth:.1f}%")
-    col2.metric("Growth in Luxury Homes (>150m²)", f"+{lux_growth:.1f}%")
-
+    # 5. The Cycling Note (Addressing the Casus text)
     st.info(
-        "**Final Conclusion:** The data reveals a 'spatial squeeze'. While the total housing stock grew by ~20%, "
-        "the luxury segment (>150m²) grew by over 100%. At the same time, smaller homes command the highest price per m². "
-        "Building more houses isn't solving the problem if we are building the wrong size—spatial inequality in Amsterdam is structural."
+        "**Note on Cycling:** This analysis uses straight-line distance. However, Amsterdam residents cycle. "
+        "A cyclist might ignore a tram stop 200m away if it's a slow line, and instead cycle 2km to a Metro station for a faster connection. "
+        "Therefore, the actual value of a transport node is likely higher than a simple straight-line distance suggests."
     )
+
+    # 6. Address the 15 missing coordinates
+    missing_coords = fun['Latitude'].isna().sum()
+    if missing_coords > 0:
+        st.warning(f"**Data Integrity:** {missing_coords} listings were excluded from the distance analysis because they are missing coordinates.")
