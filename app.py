@@ -142,14 +142,14 @@ with tab2:
                                      zoom=11, height=600,
                                      color_continuous_scale="Inferno")
 
-            # FIXED: Correctly indented so it adds stops to BOTH map modes
+            # FIXED: Use go.Scattermap instead of go.Scattermapbox
             try:
                 stops_map = pd.read_csv("data/raw/tram_stops.csv")
-                fig.add_trace(go.Scattermapbox(
+                fig.add_trace(go.Scattermap(
                     lat=stops_map['lat'],
                     lon=stops_map['lon'],
                     mode='markers',
-                    marker=go.scattermapbox.Marker(size=6, color='cyan'),
+                    marker=dict(size=6, color='cyan'), # Updated marker syntax
                     text=stops_map['name'],
                     name='Tram/Metro Stops',
                     hoverinfo='text'
