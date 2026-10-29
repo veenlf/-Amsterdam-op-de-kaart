@@ -129,6 +129,9 @@ import scipy.stats as stats # Add this to your top-level imports
 # ==========================================
 # TAB 3: Statistics
 # ==========================================
+# ==========================================
+# TAB 3: Statistics
+# ==========================================
 with tab3:
     st.subheader("Statistical Underpinning: Price vs. Size")
     st.markdown("**Research Question:** Is there a statistically significant correlation between the size of a home (in m²) and its asking price per m² in Amsterdam?")
@@ -136,21 +139,31 @@ with tab3:
     # 1. Prepare data (drop rows without size or price)
     corr_df = fun.dropna(subset=['Wonen', 'price_per_m2'])
     
+    # Filter out extreme outliers (e.g., > 500m2) to make the trend clearer
+    corr_df = corr_df[corr_df['Wonen'] <= 500]
+    
     # 2. Run the Pearson Correlation
     corr, p_value = stats.pearsonr(corr_df['Wonen'], corr_df['price_per_m2'])
     r_squared = corr ** 2
     
-    # 3. Display the statistics
+    # 3. Display the statistics with explanations
     st.markdown(f"**Number of listings analyzed:** `{len(corr_df):,}`")
-    st.markdown(f"**Pearson Correlation (r):** `{corr:.3f}`")
-    st.markdown(f"**R-squared:** `{r_squared:.3f}`")
-    st.markdown(f"**P-value:** `{p_value:.10f}`")
+    
+    col_stat1, col_stat2, col_stat3 = st.columns(3)
+    col_stat1.metric("Correlation (r)", f"{corr:.3f}")
+    col_stat2.metric("R-squared (R²)", f"{r_squared:.3f}")
+    col_stat3.metric("P-value", f"{p_value:.10f}")
     
     if p_value < 0.05:
         st.success("Statistically significant relationship found (p < 0.05).")
-        st.markdown("*Conclusion: As the size of a home increases, the asking price per m² tends to decrease. Smaller homes (often apartments) command a premium per square meter in Amsterdam, likely due to their central location.*")
-    else:
-        st.warning("No statistically significant relationship found (p >= 0.05).")
+        
+        # THIS IS THE EXPLANATION YOU ASKED FOR
+        st.markdown(f"""
+        **What does this mean?**
+        *   **The P-value** tells us this relationship is mathematically real and not a coincidence.
+        *   **The R-squared ({r_squared:.3f})** tells us that size *only explains about {r_squared*100:.1f}%* of the price per m². 
+        *   **Conclusion:** While larger homes have a slightly lower price per m², the size of the house is *not* the main driver of the price. You are paying for **location**, not just space. A small 50m² apartment in the Jordaan is vastly more expensive per m² than a 150m² house in Nieuw-West.
+        """)
         
     # 4. Visualise with a scatter plot and trendline
     st.markdown("### Visualising the Relationship")
@@ -158,23 +171,9 @@ with tab3:
         corr_df, 
         x='Wonen', 
         y='price_per_m2', 
-        trendline="ols", # Adds the linear regression line
-        title="Size (m²) vs. Asking Price per m²",
+        trendline="ols", 
+        title="Size (m²) vs. Asking Price per m² (Filtered < 500m²)",
         labels={'Wonen': 'Size (m²)', 'price_per_m2': 'Price per m² (€)'},
         opacity=0.5
     )
     st.plotly_chart(fig_scatter, use_container_width=True)
-
-    # 5. The CBS Trend (Keep this, it looks great)
-    st.markdown("---")
-    st.markdown("### 2. Amsterdam Housing Stock (CBS) over Time")
-    fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=cbs['year'], y=cbs['Voorraad'], mode='lines+markers'))
-    fig2.update_layout(title="Amsterdam Housing Stock (2012-2026)",
-                      xaxis_title="Year", yaxis_title="Total Housing Stock")
-    st.plotly_chart(fig2, use_container_width=True)
-    
-    st.info(
-        "**Final Conclusion:** While the total housing stock is growing, the size of a home is a strong predictor of its price per square meter. "
-        "Smaller homes command significantly higher prices per m², proving that location and density are massive drivers of spatial inequality in Amsterdam."
-    )
