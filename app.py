@@ -4,12 +4,13 @@ import plotly.graph_objects as go
 import pandas as pd
 from src.load import load_funda
 from src.clean import clean_funda, clean_cbs
-from scipy.stats import ttest_ind
+from geopy.distance import geodesic
 
 st.set_page_config(page_title="Amsterdam Housing — Case 2", layout="wide")
 st.title("Amsterdam Housing Prices — Funda vs CBS")
 
 @st.cache_data
+@st.cache_data(show_spinner=False)
 def get_data():
     fun = clean_funda(load_funda())
     
@@ -17,8 +18,46 @@ def get_data():
     raw_cbs = pd.read_csv("data/raw/cbs_woningvoorraad_amsterdam.csv")
     cbs = clean_cbs(raw_cbs)
     
+    # --- NEW: CALCULATE DISTANCES ---
+    try:
+        # Load the tram stops you generated
+        stops = pd.read_csv("data/raw/tram_stops.csv")
+        
+        # 1. Distance to City Center (Amsterdam Centraal)
+        center_loc = (52.379189, 4.899431)
+        fun['dist_to_center_km'] = fun.apply(
+            lambda row: geodesic(center_loc, (row['Latitude'], row['Longitude'])).km 
+            if pd.notna(row['Latitude']) and pd.notna(row['Longitude']) else None, 
+            axis=1
+        )
+        
+        # 2. Distance to Nearest Stop
+        def get_min_stop_distance(row):
+            if pd.isna(row['Latitude']) or pd.isna(row['Longitude']):
+                return None
+            
+            house_loc = (row['Latitude'], row['Longitude'])
+            # Calculate distance to all stops and return the minimum
+            distances = stops.apply(
+                lambda stop: geodesic(house_loc, (stop['lat'], stop['lon'])).km, 
+                axis=1
+            )
+            return distances.min()
+        
+        with st.spinner("Calculating distances to public transport (this takes a moment)..."):
+            fun['dist_to_stop_km'] = fun.apply(get_min_stop_distance, axis=1)
+            
+    except FileNotFoundError:
+        st.error("⚠️ `tram_stops.csv` not found. Please run `fetch_stops.py` to generate it.")
+        fun['dist_to_center_km'] = None
+        fun['dist_to_stop_km'] = None
+    except Exception as e:
+        st.error(f"Error calculating distances: {e}")
+        
     return fun, cbs
 
+# --- SIDEBAR FILTERS ---
+# Load the data before the sidebar filters use it.
 fun, cbs = get_data()
 
 # --- SIDEBAR FILTERS ---
