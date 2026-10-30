@@ -11,7 +11,28 @@ from src.clean import clean_funda
 
 st.set_page_config(page_title="Amsterdam Housing — Case 2", layout="wide")
 st.title("Amsterdam Housing Prices — Funda vs CBS")
-
+st.markdown(
+    """
+    <style>
+    /* Force the multiselect container to grow with its content */
+    div[data-baseweb="select"] > div {
+        height: auto !important;
+        max-height: none !important;
+    }
+    /* Ensure the tags wrap properly without getting cut off */
+    div[data-baseweb="select"] ul {
+        flex-wrap: wrap !important;
+        max-height: none !important;
+    }
+    /* Remove any inner scrollbars for the multiselect */
+    div[data-baseweb="select"] > div:first-child {
+        max-height: none !important;
+        overflow-y: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 R = 6371.0
 CENTRAAL = (52.379189, 4.899431)
 
