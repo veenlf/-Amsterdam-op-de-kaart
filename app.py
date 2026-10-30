@@ -66,7 +66,7 @@ def get_data():
 
 fun, n_raw, n_missing_coords = get_data()
 
-# --- SIDEBAR FILTERS ---
+# SIDEBAR FILTERS 
 st.sidebar.header("Dashboard Filters")
 p_min, p_max = int(fun["Vraagprijs"].min()), int(fun["Vraagprijs"].max())
 price_range = st.sidebar.slider("Asking Price Range (€)", p_min, p_max, (p_min, p_max), step=50000)
@@ -85,11 +85,10 @@ if fun.empty:
     st.stop()
 
 # --- TABS ---
-tab1, tab2, tab3 = st.tabs(["Funda Listings", "Funda Map", "CBS Statistics"])
+tab1, tab2, tab3 = st.tabs(["Funda Listings", "Funda Map", "CBS Statistics & Conclusion"])
 
-# ==========================================
 # TAB 1: Listings & Bar Chart
-# ==========================================
+
 with tab1:
     st.subheader("Funda listings — Asking price per m²")
     
@@ -122,9 +121,8 @@ with tab1:
 
     st.dataframe(plot_df[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
 
-# ==========================================
 # TAB 2: Map
-# ==========================================
+
 with tab2:
     st.subheader("Funda listings — Geographic Distribution")
     try:
@@ -157,14 +155,13 @@ with tab2:
                     hover_name="Street Address", opacity=0.6, zoom=11, height=600,
                     labels={"price_per_m2": "€/m²"},
                 )
-            # FIXED: Use go.Scattermap instead of go.Scattermapbox
             try:
                 stops_map = pd.read_csv("data/raw/tram_stops.csv")
                 fig.add_trace(go.Scattermap(
                     lat=stops_map['lat'],
                     lon=stops_map['lon'],
                     mode='markers',
-                    marker=dict(size=6, color='cyan'), # Updated marker syntax
+                    marker=dict(size=6, color='cyan'), 
                     text=stops_map['name'],
                     name='Tram/Metro Stops',
                     hoverinfo='text'
@@ -184,9 +181,8 @@ with tab2:
     except Exception as e:
         st.error(f"Could not render map: {e}")
 
-# ==========================================
 # TAB 3: Statistics & Geography
-# ==========================================
+
 with tab3:
     st.subheader("The value of public transport: stop proximity vs. centre proximity")
 
@@ -236,7 +232,7 @@ with tab3:
 
     st.table(pd.DataFrame(rows))
 
-    # --- NEW ROBUSTNESS CHECK ---
+# robuste check
     st.markdown("### Robustness Check: Inner City vs. Outer City")
     b2 = models["+ centre distance"].params["dist_to_stop_km"]
     b3 = models["+ centre + stadsdeel"].params["dist_to_stop_km"]
