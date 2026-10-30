@@ -63,14 +63,6 @@ if fun.empty:
     st.warning("No listings match these filters. Widen them in the sidebar.")
     st.stop()
 
-
-# FIXED: Moved distance slider outside of the price slider
-dist_filter = st.sidebar.slider("Max Distance to Tram/Metro (km)", 0.1, 5.0, 5.0, 0.1)
-
-# Apply filters to the Funda dataframe
-fun = fun[fun['Vraagprijs'].between(price_range[0], price_range[1])]
-fun = fun[fun['dist_to_stop_km'] <= dist_filter]
-
 # --- TABS ---
 tab1, tab2, tab3 = st.tabs(["Funda Listings", "Funda Map", "CBS Statistics"])
 
@@ -159,12 +151,12 @@ with tab2:
             except FileNotFoundError:
                 pass
                                          
-            fig.update_layout(
-                map_style="carto-darkmatter", 
-                margin={"r":0,"t":0,"l":0,"b":0},
-                map_center={"lat": 52.3676, "lon": 4.9041}, 
-                map_zoom=10.5 
-            )
+            if map_mode == "Specific Neighbourhood" and not highlight_df.empty:
+                centre = {"lat": highlight_df["Latitude"].mean(), "lon": highlight_df["Longitude"].mean()}; zoom = 14
+            else:
+                centre = {"lat": 52.3676, "lon": 4.9041}; zoom = 10.5
+            fig.update_layout(map_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0},
+                                map_center=centre, map_zoom=zoom)
             st.plotly_chart(fig, use_container_width=True)
         
         st.info("**Insight:** The heatmap reveals high-density clusters of expensive listings in the city centre, while the 'Specific Neighbourhood' mode lets you isolate and examine individual areas like the Jordaan or Oud-Zuid.")
@@ -203,8 +195,9 @@ with tab3:
 
     # 3) Regression: three models
     r = plot_df[["dist_to_stop_km", "dist_to_center_km"]].corr().iloc[0, 1]
-    st.caption(f"Correlation between distance-to-stop and distance-to-centre: {r:.2f}. "
-               "High values make it hard to separate the two effects.")
+    st.caption(f"Correlation between distance-to-stop and distance-to-centre: {r:.2f}"
+               + (" — high, so the two effects are hard to separate." if abs(r) > 0.6
+                  else " — low, so the two effects can be separated."))
     models = {
         "Stop only": smf.ols("price_per_m2 ~ dist_to_stop_km", plot_df).fit(),
         "+ centre distance": smf.ols("price_per_m2 ~ dist_to_stop_km + dist_to_center_km", plot_df).fit(),
@@ -220,18 +213,37 @@ with tab3:
                      "R²": round(m.rsquared, 2), "n": int(m.nobs)})
     st.table(pd.DataFrame(rows))
 
-    m2 = models["+ centre distance"]
-    b, p = m2.params["dist_to_stop_km"], m2.pvalues["dist_to_stop_km"]
-    if p >= 0.05:
-        st.warning(f"**Conclusion:** after controlling for centre distance, distance to a stop is not significant "
-                   f"(p = {p:.2f}). The 'stop premium' is mostly a 'centre premium'.")
-    elif b < 0:
-        st.success(f"**Conclusion:** at the same distance from the centre, every km closer to a stop goes with "
-                   f"about €{abs(b):.0f}/m² higher asking prices (R² = {m2.rsquared:.2f}, n = {int(m2.nobs)}).")
-    else:
-        st.warning(f"**Conclusion:** after controlling for centre distance, being farther from a stop goes with "
-                   f"€{b:.0f}/m² higher prices. Proximity to a stop does not carry its own premium here. "
+    st.table(pd.DataFrame(rows))
+
+    # --- NEW ROBUSTNESS CHECK ---
+    st.markdown("### Robustness Check: Inner City vs. Outer City")
+    b2 = models["+ centre distance"].params["dist_to_stop_km"]
+    b3 = models["+ centre + stadsdeel"].params["dist_to_stop_km"]
+
+    split = []
+    for name, d_ in [("Inner city (< 6 km from Centraal)", plot_df[plot_df["dist_to_center_km"] < 6]),
+                     ("Outer city (≥ 6 km)", plot_df[plot_df["dist_to_center_km"] >= 6])]:
+        if len(d_) < 30:
+            continue
+        # Using HC3 robust standard errors to handle heteroskedasticity
+        m = smf.ols("price_per_m2 ~ dist_to_stop_km + dist_to_center_km", d_).fit(cov_type="HC3")
+        lo, hi = m.conf_int().loc["dist_to_stop_km"]
+        split.append({"Area": name, "€/m² per extra km to a stop": round(m.params["dist_to_stop_km"]),
+                      "95% CI": f"{lo:.0f} to {hi:.0f}", "n": int(m.nobs)})
+    
+    if split:
+        st.dataframe(pd.DataFrame(split), hide_index=True)
+
+    if np.sign(b2) != np.sign(b3):
+        st.warning(f"**Conclusion:** the stop effect is not robust. Controlling for centre distance gives "
+                   f"€{b2:+.0f}/m² per extra km, but adding Stadsdeel flips it to €{b3:+.0f}. "
+                   "The stop premium looks like an inner-city effect, not a general one. "
                    "Association only, not causation.")
+    elif b3 < 0:
+        st.success(f"**Conclusion:** even within a Stadsdeel and at the same distance from the centre, each extra km "
+                   f"to a stop goes with €{abs(b3):.0f}/m² lower asking prices.")
+    else:
+        st.warning(f"**Conclusion:** no stop premium after controls (€{b3:+.0f}/m² per extra km).")
 
     # 4) Walking vs cycling
     st.markdown("### Walking vs. cycling")
