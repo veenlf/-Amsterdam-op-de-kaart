@@ -7,63 +7,62 @@ import scipy.stats as stats
 import statsmodels.formula.api as smf
 from scipy.spatial import cKDTree
 from src.load import load_funda
-from src.clean import clean_funda, clean_cbs
+from src.clean import clean_funda
 
 st.set_page_config(page_title="Amsterdam Housing — Case 2", layout="wide")
 st.title("Amsterdam Housing Prices — Funda vs CBS")
 
+R = 6371.0
+CENTRAAL = (52.379189, 4.899431)
+
+def haversine_km(lat1, lon1, lat2, lon2):
+    lat1, lon1, lat2, lon2 = map(np.radians, (lat1, lon1, lat2, lon2))
+    a = np.sin((lat2 - lat1) / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin((lon2 - lon1) / 2) ** 2
+    return 2 * R * np.arcsin(np.sqrt(a))
+
+def chord(km):  # km radius -> chord length on the unit sphere (for the KD-tree)
+    return 2 * np.sin(km / (2 * R))
+
 @st.cache_data(show_spinner=False)
 def get_data():
-    fun = clean_funda(load_funda())
-    raw_cbs = pd.read_csv("data/raw/cbs_woningvoorraad_amsterdam.csv")
-    cbs = clean_cbs(raw_cbs)
-    
-    try:
-        stops = pd.read_csv("data/raw/tram_stops.csv")
-        
-        # --- FAST DISTANCE CALCULATION USING KD-TREE ---
-        valid_coords = fun.dropna(subset=['Latitude', 'Longitude']).index
-        
-        # Convert to radians
-        stops_rad = np.radians(stops[['lat', 'lon']].values)
-        houses_rad = np.radians(fun.loc[valid_coords, ['Latitude', 'Longitude']].values)
-        R = 6371.0 # Earth radius in km
-        
-        # 1. Distance to Nearest Stop
-        tree_stops = cKDTree(stops_rad)
-        distances_stops, _ = tree_stops.query(houses_rad, k=1)
-        fun.loc[valid_coords, 'dist_to_stop_km'] = distances_stops * R
-        
-        # 2. Distance to City Center (Amsterdam Centraal)
-        # FIXED: Create the tree once, query all houses at once. 
-        center_rad = np.radians([[52.379189, 4.899431]]) 
-        tree_center = cKDTree(center_rad)
-        distances_center, _ = tree_center.query(houses_rad, k=1)
-        fun.loc[valid_coords, 'dist_to_center_km'] = distances_center * R
-            
-    except FileNotFoundError:
-        st.error("⚠️ `tram_stops.csv` not found. Please run `fetch_stops.py`.")
-        fun['dist_to_center_km'] = None
-        fun['dist_to_stop_km'] = None  
-        
-    return fun, cbs
+    raw = load_funda()
+    n_raw = len(raw)
+    coords = raw[["Latitude", "Longitude"]].apply(pd.to_numeric, errors="coerce")
+    n_missing_coords = int(coords.isna().any(axis=1).sum())
 
-# Load the data
-fun, cbs = get_data()
+    fun = clean_funda(raw)
+    stops = pd.read_csv("data/raw/tram_stops.csv")  # no try/except: fail loudly
+
+    houses = np.radians(fun[["Latitude", "Longitude"]].values)
+    tree = cKDTree(np.radians(stops[["lat", "lon"]].values))
+
+    d_chord, _ = tree.query(houses, k=1)
+    fun["dist_to_stop_km"] = 2 * R * np.arcsin(d_chord / 2)   # exact arc length
+    fun["stops_500m"] = tree.query_ball_point(houses, r=chord(0.5), return_length=True)
+    fun["stops_2km"] = tree.query_ball_point(houses, r=chord(2.0), return_length=True)
+    fun["dist_to_center_km"] = haversine_km(fun["Latitude"], fun["Longitude"], *CENTRAAL)
+    return fun, n_raw, n_missing_coords
+
+fun, n_raw, n_missing_coords = get_data()
 
 # --- SIDEBAR FILTERS ---
 st.sidebar.header("Dashboard Filters")
-min_price = int(fun['Vraagprijs'].quantile(0.05))
-max_price = int(fun['Vraagprijs'].max())
+p_min, p_max = int(fun["Vraagprijs"].min()), int(fun["Vraagprijs"].max())
+price_range = st.sidebar.slider("Asking Price Range (€)", p_min, p_max, (p_min, p_max), step=50000)
+d_max = float(np.ceil(fun["dist_to_stop_km"].max()))
+dist_filter = st.sidebar.slider("Max distance to tram/metro stop (km)", 0.1, d_max, d_max, 0.1)
+stadsdelen = sorted(fun["Stadsdeel"].dropna().unique())
+chosen = st.sidebar.multiselect("Stadsdeel", stadsdelen, default=stadsdelen)
 
-# FIXED: Properly closed the price slider
-price_range = st.sidebar.slider(
-    "Asking Price Range (€)", 
-    min_value=min_price, 
-    max_value=max_price, 
-    value=(min_price, max_price),
-    step=50000
-)
+fun = fun[
+    fun["Vraagprijs"].between(*price_range)
+    & (fun["dist_to_stop_km"] <= dist_filter)
+    & fun["Stadsdeel"].isin(chosen)
+]
+if fun.empty:
+    st.warning("No listings match these filters. Widen them in the sidebar.")
+    st.stop()
+
 
 # FIXED: Moved distance slider outside of the price slider
 dist_filter = st.sidebar.slider("Max Distance to Tram/Metro (km)", 0.1, 5.0, 5.0, 0.1)
@@ -136,12 +135,15 @@ with tab2:
                                      size="Wonen", hover_name="Street Address", 
                                      color="Vraagprijs", color_continuous_scale="Viridis",
                                      zoom=11, height=600)
-            else:
-                fig = px.density_map(map_df, lat="Latitude", lon="Longitude", 
-                                     z="Vraagprijs", radius=15,
-                                     zoom=11, height=600,
-                                     color_continuous_scale="Inferno")
 
+            else:
+                fig = px.scatter_map(
+                    map_df, lat="Latitude", lon="Longitude",
+                    color="price_per_m2", color_continuous_scale="Viridis",
+                    range_color=[map_df["price_per_m2"].quantile(0.05), map_df["price_per_m2"].quantile(0.95)],
+                    hover_name="Street Address", opacity=0.6, zoom=11, height=600,
+                    labels={"price_per_m2": "€/m²"},
+                )
             # FIXED: Use go.Scattermap instead of go.Scattermapbox
             try:
                 stops_map = pd.read_csv("data/raw/tram_stops.csv")
@@ -173,49 +175,76 @@ with tab2:
 # TAB 3: Statistics & Geography
 # ==========================================
 with tab3:
-    st.subheader("Statistical Analysis: The Value of Public Transport")
-    st.markdown("**Research Question:** Does proximity to a tram/metro stop increase the price per m²? And is that just because it's close to the center?")
-    
-    plot_df = fun.dropna(subset=['price_per_m2', 'dist_to_stop_km', 'dist_to_center_km']).copy()
-    
-    bins = [0, 0.3, 0.6, 1.0, 2.0, 10.0]
-    labels = ['< 300m', '300m - 600m', '600m - 1km', '1km - 2km', '> 2km']
-    plot_df['Distance Band'] = pd.cut(plot_df['dist_to_stop_km'], bins=bins, labels=labels)
-    
-    fig_box = px.box(plot_df, x='Distance Band', y='price_per_m2', 
-                     title="Price per m² by Distance to Nearest Tram/Metro Stop",
-                     color='Distance Band',
-                     color_discrete_sequence=px.colors.sequential.Viridis)
-    st.plotly_chart(fig_box, use_container_width=True)
-    
-    st.markdown("### Multiple Regression: Controlling for the City Center")
-    st.markdown("If being close to the center is the *only* reason for high prices, the 'distance to stop' effect will disappear when we add 'distance to center' to the model.")
-    
-    formula = "price_per_m2 ~ dist_to_stop_km + dist_to_center_km"
-    model = smf.ols(formula, data=plot_df).fit()
-    
-    st.text(model.summary().tables[1])
-    
-    p_val_stop = model.pvalues['dist_to_stop_km']
-    
-    if p_val_stop < 0.05:
-        st.success("**Conclusion:** Even when we control for the distance to the city center, the distance to a transport stop remains statistically significant. This proves that public transport accessibility has its own intrinsic value.")
-    else:
-        st.warning("**Conclusion:** Once we control for distance to the center, the distance to a transport stop is no longer significant. This suggests that the 'tram premium' is actually just a 'center premium'.")
-        
-    st.info(
-        "**Note on Cycling:** This analysis uses straight-line distance. However, Amsterdam residents cycle. "
-        "A cyclist might ignore a tram stop 200m away if it's on a slow line, and instead cycle 2km to a Metro station for a faster connection. "
-        "Therefore, the actual value of a transport node is likely higher than a simple straight-line distance suggests."
-    )
+    st.subheader("The value of public transport: stop proximity vs. centre proximity")
 
-    missing_coords = fun['Latitude'].isna().sum()
-    if missing_coords > 0:
-        st.warning(f"**Data Integrity:** {missing_coords} listings were excluded from the distance analysis because they are missing coordinates.")
-        
-    with st.expander("🛠️ Technical Limitations & Edge Cases"):
-        st.markdown("""
-        *   **Missing Data:** 15 listings lack GPS coordinates. These were automatically excluded from distance calculations to ensure accuracy.
-        *   **Degrees vs. Kilometers:** We used the Haversine formula (via a KD-Tree spatial index) instead of simply subtracting latitude and longitude. Degrees of longitude are shorter than degrees of latitude in Amsterdam (~68km vs ~111km), meaning simple subtraction would have distorted the distances by roughly 40%.
-        *   **Walking vs. Cycling:** These distances are "as the crow flies". However, an Amsterdammer might ignore a tram stop 200m away if it's on a slow line, and cycle 2km to a Metro station for speed. The true value of a transport node is likely higher than this straight-line analysis suggests.
+    plot_df = fun.dropna(subset=["price_per_m2", "dist_to_stop_km", "dist_to_center_km", "Stadsdeel"]).copy()
+    if len(plot_df) < 30:
+        st.warning("Too few listings left for a reliable analysis. Widen the filters.")
+        st.stop()
+
+    # 1) Distance bands
+    bins = [0, 0.3, 0.6, 1.0, 2.0, 100]
+    labels = ["< 300m", "300–600m", "600m–1km", "1–2km", "> 2km"]
+    plot_df["Distance Band"] = pd.cut(plot_df["dist_to_stop_km"], bins=bins, labels=labels)
+    st.plotly_chart(px.box(plot_df, x="Distance Band", y="price_per_m2", color="Distance Band",
+                           category_orders={"Distance Band": labels},
+                           title="Price per m² by distance to nearest stop"), use_container_width=True)
+
+    # 2) Same distance to centre, near vs far from a stop
+    st.markdown("### Is it the stop, or the centre?")
+    plot_df["Centre band"] = pd.cut(plot_df["dist_to_center_km"], [0, 2, 4, 6, 10, 100],
+                                    labels=["< 2 km", "2–4 km", "4–6 km", "6–10 km", "> 10 km"])
+    plot_df["Near a stop (< 500 m)"] = plot_df["dist_to_stop_km"] < 0.5
+    within = (plot_df.groupby(["Centre band", "Near a stop (< 500 m)"], observed=True)["price_per_m2"]
+              .agg(median="median", n="count").reset_index())
+    st.plotly_chart(px.bar(within, x="Centre band", y="median", color="Near a stop (< 500 m)",
+                           barmode="group", hover_data=["n"],
+                           title="Median €/m² at the same distance from the centre"), use_container_width=True)
+
+    # 3) Regression: three models
+    r = plot_df[["dist_to_stop_km", "dist_to_center_km"]].corr().iloc[0, 1]
+    st.caption(f"Correlation between distance-to-stop and distance-to-centre: {r:.2f}. "
+               "High values make it hard to separate the two effects.")
+    models = {
+        "Stop only": smf.ols("price_per_m2 ~ dist_to_stop_km", plot_df).fit(),
+        "+ centre distance": smf.ols("price_per_m2 ~ dist_to_stop_km + dist_to_center_km", plot_df).fit(),
+        "+ centre + stadsdeel": smf.ols("price_per_m2 ~ dist_to_stop_km + dist_to_center_km + C(Stadsdeel)", plot_df).fit(),
+    }
+    rows = []
+    for name, m in models.items():
+        lo, hi = m.conf_int().loc["dist_to_stop_km"]
+        rows.append({"Model": name,
+                     "€/m² per extra km to a stop": round(m.params["dist_to_stop_km"]),
+                     "95% CI": f"{lo:.0f} to {hi:.0f}",
+                     "p-value": f"{m.pvalues['dist_to_stop_km']:.3g}",
+                     "R²": round(m.rsquared, 2), "n": int(m.nobs)})
+    st.table(pd.DataFrame(rows))
+
+    m2 = models["+ centre distance"]
+    b, p = m2.params["dist_to_stop_km"], m2.pvalues["dist_to_stop_km"]
+    if p >= 0.05:
+        st.warning(f"**Conclusion:** after controlling for centre distance, distance to a stop is not significant "
+                   f"(p = {p:.2f}). The 'stop premium' is mostly a 'centre premium'.")
+    elif b < 0:
+        st.success(f"**Conclusion:** at the same distance from the centre, every km closer to a stop goes with "
+                   f"about €{abs(b):.0f}/m² higher asking prices (R² = {m2.rsquared:.2f}, n = {int(m2.nobs)}).")
+    else:
+        st.warning(f"**Conclusion:** after controlling for centre distance, being farther from a stop goes with "
+                   f"€{b:.0f}/m² higher prices. Proximity to a stop does not carry its own premium here. "
+                   "Association only, not causation.")
+
+    # 4) Walking vs cycling
+    st.markdown("### Walking vs. cycling")
+    mode = st.radio("Travel mode", ["Walking (stops within 500 m)", "Cycling (stops within 2 km)"], horizontal=True)
+    col = "stops_500m" if mode.startswith("Walking") else "stops_2km"
+    st.plotly_chart(px.scatter(plot_df, x=col, y="price_per_m2", opacity=0.3, trendline="ols",
+                               labels={col: "Number of stops in reach", "price_per_m2": "€/m²"}), use_container_width=True)
+
+    with st.expander("Technical limitations"):
+        st.markdown(f"""
+        * **Missing coordinates:** {n_missing_coords} of {n_raw} listings had no coordinates; the rest enter the analysis.
+        * **Distance:** haversine on lat/lon. A degree of longitude is ~68 km at Amsterdam's latitude vs ~111 km for latitude, so subtracting degrees would distort distances by ~40%.
+        * **Asking prices, one snapshot:** these are asking prices, not sale prices.
+        * **Straight-line distance:** cyclists don't walk to the nearest stop. Hence the 2 km cycling metric.
+        * **Association, not causation.**
         """)

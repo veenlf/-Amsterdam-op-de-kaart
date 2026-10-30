@@ -1,56 +1,514 @@
 name,lat,lon,type
-Unknown,52.3678364,4.9021531,subway_entrance
-Ingang Nieuwe Herengracht,52.3662234,4.9049175,subway_entrance
-Nieuwmarkt,52.3705305,4.900338,subway_entrance
-Wibautstraat,52.3531267,4.9125252,subway_entrance
-Wibautstraat,52.353248,4.9131154,subway_entrance
-Wibautstraat,52.3554753,4.9117667,subway_entrance
-Unknown,52.3615869,4.9080611,subway_entrance
-Mauritskade,52.3609246,4.9085412,subway_entrance
-Wibautstraat,52.3552759,4.9112569,subway_entrance
-Spaklerweg,52.3398896,4.9207079,subway_entrance
-Spaklerweg,52.3400467,4.921353,subway_entrance
-Closed entrance Nieuwmarkt,52.3704463,4.9007556,subway_entrance
-Duivendrecht,52.3234795,4.9365271,subway_entrance
-Nieuwmarkt,52.3722981,4.9018885,subway_entrance
-Unknown,52.3767811,4.9014462,subway_entrance
-Ingang Open Havenfront,52.3770787,4.901646,subway_entrance
-Ingang Oosterdokskade,52.3769403,4.9023349,subway_entrance
-Valkenierstraat,52.3615812,4.9081226,subway_entrance
-Stadstimmertuin,52.3616449,4.9073078,subway_entrance
-Damrak/Prins Hendrikkade,52.3778332,4.8992702,subway_entrance
-Unknown,52.3780857,4.9006779,subway_entrance
-Unknown,52.37854,4.8994201,subway_entrance
-Sarphatistraat Amstel,52.3611272,4.9075056,subway_entrance
-Sarphatistraat Oost,52.3612334,4.9085513,subway_entrance
-Weesperplein,52.3613395,4.9072273,subway_entrance
-Nieuwmarkt,52.3721187,4.9008212,subway_entrance
-Duivendrecht,52.32443,4.9382191,subway_entrance
-Unknown,52.3672415,4.9017898,subway_entrance
-Unknown,52.3673671,4.9019277,subway_entrance
-Europaplein,52.3406555,4.8912711,subway_entrance
-Europaplein,52.342315,4.8911495,subway_entrance
-Europaplein,52.3424781,4.8912581,subway_entrance
-Europaplein,52.3424715,4.8911908,subway_entrance
-Europaplein,52.3424846,4.8913247,subway_entrance
-Europaplein,52.3405579,4.8913083,subway_entrance
-Europaplein,52.3405548,4.8913725,subway_entrance
-Europaplein,52.3405517,4.8914339,subway_entrance
-P+R,52.4026388,4.9331877,subway_entrance
-Unknown,52.3890961,4.9190048,subway_entrance
-Gare du Nord,52.4015132,4.9317375,subway_entrance
-Busstation A,52.4023209,4.9323052,subway_entrance
-Busstation B,52.4020515,4.9328847,subway_entrance
-Termini,52.4019026,4.932237,subway_entrance
-Busstation B,52.4019687,4.9327803,subway_entrance
-Busstation A,52.4022228,4.9321818,subway_entrance
-Termini,52.4018038,4.9321121,subway_entrance
-Lijnbaansgracht,52.3598804,4.8907363,subway_entrance
-Prinsengracht,52.3618257,4.8914355,subway_entrance
-Rokin,52.3695771,4.8924716,subway_entrance
-Rokin,52.3718358,4.8930559,subway_entrance
-Unknown,52.3549425,4.8906806,subway_entrance
-Unknown,52.35288,4.890765,subway_entrance
-Lift,52.3597631,4.8911314,subway_entrance
-Weteringcircuit,52.3595834,4.8916883,subway_entrance
-Nieuwmarkt,52.3703521,4.9002362,subway_entrance
+Surinameplein,52.3580481,4.8521827,tram
+Alexanderplein,52.3635043,4.9193627,tram
+Meester Visserplein,52.3679611,4.9053602,tram
+Nassaukade,52.3813125,4.8792047,tram
+Zoutkeetsgracht,52.388084,4.8851416,tram
+Van Limburg Stirumplein,52.3844185,4.8749198,tram
+Dam,52.3735332,4.8936441,tram
+Dapperstraat,52.3609314,4.9289422,tram
+Roelof Hartplein,52.3531224,4.8820871,tram
+Concertgebouw,52.3566951,4.8796377,tram
+Frederik Hendrikplantsoen,52.3784783,4.875268,tram
+Hugo de Grootplein,52.3750097,4.8729548,tram
+Hugo de Grootplein,52.3742987,4.872531,tram
+Zeeburgerdijk,52.3659142,4.9324956,tram
+Pontanusstraat,52.3659161,4.927204,tram
+Waterlooplein,52.3669934,4.9019846,tram
+Mauritskade,52.3630235,4.9206416,tram
+Rijksmuseum,52.3609734,4.887104,tram
+Amstelveenseweg,52.3384028,4.8575769,metro
+Jan van Galenstraat,52.3726582,4.8352937,metro
+Rietlandpark,52.3730125,4.9348277,tram
+Hoofddorpplein,52.3515256,4.8501741,tram
+Hoofddorpplein,52.3511681,4.8495922,tram
+Flevopark,52.3652037,4.9520639,tram
+Oranjebaan,52.3030059,4.8717636,tram
+Ouderkerkerlaan,52.2964971,4.8677828,tram
+Heemstedestraat,52.3514907,4.8342872,tram
+Louwesweg,52.3466865,4.8242594,tram
+Prinses Irenestraat,52.3426151,4.8767774,tram
+Europaplein,52.3402318,4.8921974,tram
+Haarlemmermeerstation,52.3492152,4.8575492,tram
+Concertgebouw,52.3560193,4.8795995,tram
+Laan van Vlaanderen,52.3464422,4.8156883,tram
+Centrum Nieuw Sloten,52.3463857,4.8110474,tram
+Oudenaardeplantsoen,52.3449284,4.8036706,tram
+Oudenaardeplantsoen,52.3450454,4.8041222,tram
+Van der Madeweg,52.3294483,4.9305189,metro
+Muziekgebouw,52.3772063,4.9134308,tram
+Brink,52.2805456,4.8517035,tram
+Poortwachter,52.2831286,4.8458857,tram
+Westwijk,52.2748113,4.8310348,tram
+Derkinderenstraat,52.3579358,4.8401257,tram
+Station Lelylaan,52.3578798,4.834559,tram
+Postjesweg,52.3647729,4.8531786,tram
+Meer en Vaart,52.3565093,4.8107529,tram
+Surinameplein,52.3580728,4.8509943,tram
+Westlandgracht,52.3515685,4.8456281,tram
+Cornelis Schuytstraat,52.3560251,4.870782,tram
+Museumplein,52.358854,4.8812446,tram
+Poortwachter,52.2833338,4.8450525,tram
+Brink,52.2805811,4.8517152,tram
+Meent,52.2808955,4.8569619,tram
+Amstelveen Stadshart,52.3012694,4.8670933,tram
+Parnassusweg,52.3369653,4.8687042,tram
+Noorddammerlaan,52.2920559,4.8400481,tram
+Amsterdamseweg,52.3153498,4.8552783,tram
+Admiraal Helfrichstraat,52.3694262,4.8446631,tram
+Lambertus Zijlplein,52.377278,4.8029137,tram
+Brinkstraat,52.3432179,4.9474661,tram
+Osdorpplein West,52.3591171,4.8032265,tram
+Van Nijenrodeweg,52.3279919,4.8565436,tram
+Jollenpad,52.3352796,4.8544501,tram
+IJsbaanpad,52.3411779,4.8524016,tram
+Bilderdijkstraat,52.3710541,4.8708148,tram
+Azartplein,52.3768181,4.9373469,tram
+Azartplein,52.3766133,4.9373223,tram
+Minervaplein,52.3467738,4.8730291,tram
+Beethovenstraat,52.3468693,4.8762769,tram
+Gerrit van der Veenstraat,52.3488198,4.8771911,tram
+Gerrit van der Veenstraat,52.3492157,4.877365,tram
+Station Amstelveen,52.3015775,4.8479601,tram
+Station Zuid,52.3408227,4.8739688,tram
+Van Boshuizenstraat,52.3248927,4.8689671,tram
+Uilenstede,52.3219431,4.8690693,tram
+Rietlandpark,52.3732299,4.9334664,tram
+Olympiaplein,52.3463018,4.8658574,tram
+Keizersgracht,52.3638329,4.8983188,tram
+Frederiksplein,52.3599361,4.8990837,tram
+Albert Cuypstraat,52.3575783,4.8994017,tram
+Waalstraat,52.3446536,4.9011051,tram
+Waalstraat,52.3444211,4.9005615,tram
+Maasstraat,52.3428638,4.8962714,tram
+Maasstraat,52.343118,4.896873,tram
+Dintelstraat,52.341925,4.8930007,tram
+Station RAI,52.3369049,4.8905473,tram
+Van Woustraat,52.3546903,4.9008616,tram
+Van Woustraat,52.3549446,4.9015849,tram
+Hoogte Kadijk,52.3668676,4.9248123,tram
+Osdorpplein Oost,52.359326,4.8077454,tram
+Prinsengracht,52.3650035,4.8843839,tram
+Keizersgracht,52.3659309,4.8863435,tram
+Theo van Goghpark,52.3511139,5.0048281,tram
+Olympiaweg,52.3452652,4.8583402,tram
+Centraal Station,52.3778942,4.9003819,tram
+Centraal Station,52.3778507,4.9009769,tram
+Weesperplein,52.3610021,4.9071213,tram
+Weesperplein,52.3614042,4.9091584,tram
+Wibautstraat,52.3572865,4.9093615,tram
+Muiderpoortstation,52.3612127,4.9328494,tram
+Overamstel,52.3317318,4.9176266,metro
+Amsteldijk,52.3471106,4.9109989,tram
+Waalstraat,52.3468171,4.9003351,tram
+Waalstraat,52.3465631,4.8997164,tram
+Scheldestraat,52.3472646,4.8915256,tram
+Wiltzanghlaan,52.3828002,4.8508513,tram
+Bos en Lommerweg,52.3811188,4.8539004,tram
+Karel Doormanstraat,52.3788687,4.8569721,tram
+De Rijpstraat,52.3773555,4.8577243,tram
+Jan van Galenstraat,52.3751323,4.8584711,tram
+Jan van Galenstraat,52.3743002,4.8586427,tram
+Admiraal De Ruijterweg,52.371502,4.8600128,tram
+Willem de Zwijgerlaan,52.3706925,4.8636349,tram
+C. van Eesterenlaan,52.3735665,4.9388456,tram
+Alexanderplein,52.3638735,4.9192366,tram
+Korte 's-Gravesandestraat,52.3623479,4.9135923,tram
+Vijzelgracht,52.3595051,4.8921024,tram
+Marnixplein,52.3773658,4.8784155,tram
+De Wittenkade,52.3832175,4.8770204,tram
+Van Hallstraat,52.3842644,4.8698541,tram
+Arent Krijtsstraat,52.3393768,4.9555768,tram
+Hugo de Vrieslaan,52.3507248,4.9354146,tram
+Hogeweg,52.353568,4.9308725,tram
+Oostpoort,52.3570101,4.9272273,tram
+Linnaeusstraat,52.3601162,4.9257029,tram
+Wijttenbachstraat,52.3597959,4.92547,tram
+Artis,52.3667187,4.910955,tram
+Insulindeweg,52.3647569,4.9476342,tram
+Soembawastraat,52.3622746,4.9441018,tram
+Molukkenstraat,52.3617259,4.9401785,tram
+Beukenweg,52.3590732,4.9167422,tram
+Dam,52.3744231,4.8912853,tram
+Nieuwe Willemsstraat,52.381394,4.8809562,tram
+Matterhorn,52.3537327,4.7747567,tram
+Pilatus,52.352828,4.7770976,tram
+Inaristraat,52.3501979,4.7836582,tram
+Ecuplein,52.3498075,4.7888748,tram
+Baden Powellweg,52.3510417,4.7951129,tram
+Hoekenes,52.3525411,4.8025242,tram
+Louis Davidsstraat,52.3539266,4.8090899,tram
+Baden Powellweg,52.3564413,4.7913,tram
+Hoekenes,52.3579858,4.7990044,tram
+Corantijnstraat,52.3617312,4.8532957,tram
+Witte de Withstraat,52.3648019,4.8591799,tram
+Nicolaas Beetsstraat,52.3654149,4.8653608,tram
+Nicolaas Beetsstraat,52.365525,4.8656566,tram
+Bilderdijkstraat,52.3671317,4.8717586,tram
+Rhijnvis Feithstraat,52.3590503,4.8603541,tram
+Rhijnvis Feithstraat,52.3588447,4.8596776,tram
+Lambertus Zijlplein,52.3772617,4.8033914,tram
+Doctor H. Colijnstraat,52.3768507,4.8071867,tram
+Burgemeester Van Leeuwenlaan,52.3763846,4.8119642,tram
+Slotermeerlaan,52.3758565,4.8176034,tram
+Burgemeester Rendorpstraat,52.3743645,4.8277027,tram
+Burgemeester Rendorpstraat,52.3744723,4.8268013,tram
+Jan van Galenstraat,52.3730297,4.8359077,tram
+Jan Tooropstraat,52.3716278,4.8381341,tram
+Jan Voermanstraat,52.3695968,4.8384594,tram
+Mercatorplein,52.3701459,4.8507957,tram
+Marco Polostraat,52.3709604,4.8554942,tram
+Burgemeester Roëllstraat,52.3745804,4.8185432,tram
+Jan van Galenstraat,52.3733319,4.8485891,tram
+Dam,52.3727319,4.891245,tram
+Dam,52.3735587,4.8913489,tram
+Wibautstraat,52.3573493,4.9097221,tram
+Tweede Van der Helststraat,52.3533345,4.8949263,tram
+Amstelveenseweg,52.338422,4.8572486,tram
+Amstelveenseweg,52.3382323,4.857301,tram
+IJsbaanpad,52.3416051,4.8577457,tram
+IJsbaanpad,52.3405984,4.8575721,tram
+Olympisch Stadion,52.3440249,4.8568368,tram
+Emmastraat,52.3529363,4.8695155,tram
+Elandsgracht,52.3695206,4.8775361,tram
+Kruislaan,52.3479273,4.9398853,tram
+Bos en Lommerplein,52.3771934,4.8464234,tram
+Johan Huizingalaan,52.3491038,4.8275024,tram
+Bos en Lommerplein,52.3777823,4.8449335,tram
+Johan Huizingalaan,52.349218,4.8274406,tram
+Burgemeester Fockstraat,52.3798913,4.8312794,tram
+Burgemeester de Vlugtlaan,52.3787581,4.8382938,tram
+Plein '40-'45,52.3808373,4.8211591,tram
+Burgemeester de Vlugtlaan,52.378963,4.8372054,tram
+Rozengracht,52.3726515,4.8759027,tram
+Marnixstraat,52.3723364,4.8763385,tram
+Plein '40-'45,52.3812253,4.8225241,tram
+Elandsgracht,52.3681423,4.8784633,tram
+Burgemeester Eliasstraat,52.38075,4.8258104,tram
+Elandsgracht,52.368541,4.8768971,tram
+Burgemeester Eliasstraat,52.3804505,4.8275036,tram
+Burgemeester Fockstraat,52.3795507,4.8332396,tram
+VUmc Hoofdingang,52.3351977,4.8600614,tram
+VUmc Hoofdingang,52.3351485,4.8611177,tram
+Westermarkt,52.3740565,4.8837739,tram
+Concertgebouw,52.3559245,4.8791804,tram
+Concertgebouw,52.3563875,4.8798146,tram
+Olympisch Stadion,52.3438468,4.8569523,tram
+Westermarkt,52.3740143,4.8843359,tram
+Zeilstraat,52.3512422,4.856734,tram
+Amstelveenseweg,52.3516183,4.8569532,tram
+Emmastraat,52.3531926,4.870169,tram
+Amstelveenseweg,52.3519533,4.8582793,tram
+Amstelveenseweg,52.3517583,4.8564723,tram
+Nieuwezijds Kolk,52.3768269,4.8946766,tram
+Nieuwezijds Kolk,52.3768464,4.8946435,tram
+Heemstedestraat,52.3515095,4.8337504,tram
+Kattenburgerstraat,52.3760656,4.9220599,tram
+Zuiderzeeweg,52.3720001,4.9616961,tram
+Laan van Vlaanderen,52.3464822,4.816387,tram
+Hoekenes,52.3524376,4.8018381,tram
+Derkinderenstraat,52.3579573,4.8397482,tram
+Victorieplein,52.3463657,4.9056743,tram
+Victorieplein,52.3467733,4.905072,tram
+1e C. Huygensstraat,52.3626163,4.8747145,tram
+Camperstraat,52.358335,4.9134821,tram
+Marco Polostraat,52.3708621,4.8551084,tram
+De Boelelaan/VU,52.3352308,4.8659833,tram
+De Clercqstraat,52.3712485,4.8705518,tram
+Sloterpark,52.3728657,4.8186098,tram
+Amstelkade,52.34941,4.904043,tram
+Molukkenstraat,52.3617404,4.9405051,tram
+Leidseplein,52.3634456,4.883062,tram
+Jan Pieter Heijestraat,52.3605256,4.8666219,tram
+Delflandlaan,52.3515418,4.8416382,tram
+Delflandlaan,52.351558,4.83976,tram
+Leidseplein,52.3646155,4.8807936,tram
+Burgemeester Roëllstraat,52.3766604,4.8194571,tram
+Parnassusweg,52.3375055,4.8688542,tram
+A. J. Ernststraat,52.332589,4.8688694,tram
+Oranjebaan,52.3029516,4.8718881,tram
+Meent,52.2812036,4.8573912,tram
+Sacharovlaan,52.2821859,4.8323231,tram
+Dijkgraafplein,52.3555825,4.7870176,tram
+Dijkgraafplein,52.3554481,4.7864929,tram
+Valeriusplein,52.3531821,4.8633455,tram
+Valeriusplein,52.3532989,4.8636337,tram
+Pilatus,52.3530108,4.776554,tram
+Inaristraat,52.3504489,4.7829483,tram
+Muiderpoortstation,52.3611749,4.9336328,tram
+Station Sloterdijk,52.3879696,4.8392172,tram
+Bilderdijkstraat,52.3673632,4.8725518,tram
+De Vlugtlaan,52.3796134,4.8382223,metro
+Bloemgracht,52.3742782,4.8763837,tram
+Kinkerstraat,52.3670831,4.8722954,tram
+Centraal Station,52.3778058,4.9003434,tram
+Centraal Station,52.3778505,4.9003629,tram
+Bos en Lommerweg,52.3803006,4.8552771,tram
+Wiltzanghlaan,52.3820439,4.8522251,tram
+Theo van Goghpark,52.3509127,5.0040139,tram
+Dam,52.3748676,4.8953791,tram
+Rokin,52.3694572,4.8921252,tram
+Rokin,52.3697221,4.892274,tram
+Rembrandtplein,52.3662601,4.8964238,tram
+Waterlooplein,52.3671715,4.9022284,tram
+Meester Visserplein,52.3677535,4.9058474,tram
+Artis,52.3665623,4.9113237,tram
+Keizersgracht,52.3637916,4.8982915,tram
+Frederiksplein,52.3590024,4.8989049,tram
+Ceintuurbaan,52.3550346,4.9010669,tram
+Lutmastraat,52.3514501,4.90332,tram
+Victorieplein,52.3465873,4.9051006,tram
+Amstelkade,52.3487259,4.9043407,tram
+Plantage Lepellaan,52.3651045,4.9155317,tram
+Mauritskade,52.3630659,4.9213369,tram
+Alexanderplein,52.3634343,4.9196097,tram
+Plantage Lepellaan,52.3652225,4.9152768,tram
+Eerste Van Swindenstraat,52.3621936,4.9238286,tram
+Eerste Van Swindenstraat,52.361616,4.9241559,tram
+Wijttenbachstraat,52.360259,4.9250867,tram
+Oostpoort,52.3574383,4.9269018,tram
+Arent Krijtsstraat,52.3395734,4.954641,tram
+Hugo de Vrieslaan,52.351066,4.934801,tram
+Kruislaan,52.3476135,4.9404536,tram
+Brinkstraat,52.3429508,4.9478099,tram
+Muziekgebouw,52.3772761,4.912547,tram
+Rietlandpark,52.3729896,4.9340409,tram
+Zuiderzeeweg,52.3719706,4.9616739,tram
+Koningsplein,52.3680424,4.8889914,tram
+Bob Haarmslaan,52.3689627,4.9688689,tram
+Diemerparklaan,52.3555154,4.9946247,tram
+Kattenburgerstraat,52.3761672,4.9211099,tram
+Diemerparklaan,52.3549103,4.9958806,tram
+Lumièrestraat,52.3525961,5.0002302,tram
+Lumièrestraat,52.3531807,4.9990167,tram
+Bloemgracht,52.3744189,4.876516,tram
+Molenwerf,52.3858873,4.8460808,tram
+Javaplein,52.3640547,4.9385662,tram
+Javaplein,52.3641725,4.9382411,tram
+C. van Eesterenlaan,52.3734596,4.9381702,tram
+Unknown,52.3713049,4.9634834,tram
+Steigereiland,52.3627073,4.9810143,tram
+Steigereiland,52.3632052,4.9799949,tram
+Paleisstraat,52.3723569,4.8906536,tram
+Rembrandtplein,52.3662292,4.8968199,tram
+Rozengracht,52.3718196,4.875944,tram
+Marnixstraat,52.3720538,4.8752838,tram
+Ceintuurbaan,52.3545776,4.9014422,tram
+Dintelstraat,52.341887,4.893324,tram
+Europaplein,52.3404324,4.8922816,tram
+Station RAI,52.3369161,4.8906393,tram
+Drentepark,52.3362207,4.889801,tram
+Amsteldijk,52.3471037,4.9111583,tram
+Willem de Zwijgerlaan,52.3704336,4.8641598,tram
+Admiraal De Ruijterweg,52.3713902,4.8604577,tram
+Kinkerstraat,52.3674579,4.8719933,tram
+Bilderdijkstraat,52.3708243,4.8698359,tram
+De Pijp,52.3527058,4.8905961,tram
+Overtoom,52.3630125,4.8750893,tram
+Overtoom,52.363227,4.8749794,tram
+Scheldestraat,52.3474774,4.8911566,tram
+Van Baerlestraat,52.3584538,4.878318,tram
+Van Baerlestraat,52.3587793,4.8781266,tram
+Victorieplein,52.3464278,4.9063478,tram
+Vennepluimstraat,52.3576998,4.9905047,tram
+Baden Powellweg,52.3509515,4.7944986,tram
+Ecuplein,52.3496994,4.7881565,tram
+1e C. Huygensstraat,52.3626351,4.874895,tram
+Johan Huizingalaan,52.3577873,4.8262383,tram
+Johan Huizingalaan,52.3578123,4.8258953,tram
+Keizersgracht,52.3659919,4.8865383,tram
+Leidseplein,52.3642233,4.8829717,tram
+Louis Davidsstraat,52.3538423,4.8084929,tram
+Matterhorn,52.3538687,4.7745043,tram
+Meer en Vaart,52.35637,4.8099119,tram
+Prinsengracht,52.3650457,4.8845404,tram
+Station Lelylaan,52.3579004,4.8337835,tram
+Curaçaostraat,52.3586176,4.8506975,tram
+Cornelis Schuytstraat,52.3559987,4.8705851,tram
+Centrum Nieuw Sloten,52.3462812,4.8105405,tram
+Louwesweg,52.346707,4.8250738,tram
+Nieuwe Willemsstraat,52.3816379,4.88118,tram
+Frederik Hendrikplantsoen,52.3786007,4.8754111,tram
+Tweede Van der Helststraat,52.3531905,4.8942153,tram
+Beukenweg,52.3582391,4.9172481,tram
+Muiderpoortstation,52.3607965,4.9326128,tram
+Camperstraat,52.3583909,4.9137826,tram
+Dapperstraat,52.3610986,4.9297575,tram
+Linnaeusstraat,52.3599165,4.9249118,tram
+Stadionweg,52.346674,4.8768645,tram
+Stadionweg,52.3471425,4.8768834,tram
+Prinses Irenestraat,52.3431074,4.8767749,tram
+Witte de Withstraat,52.3647872,4.8586095,tram
+Jan van Galenstraat,52.3729826,4.8487242,tram
+Alexanderplein,52.3633708,4.9185684,tram
+Flevopark,52.3652467,4.9510568,tram
+Frederiksplein,52.3594109,4.8978483,tram
+Insulindeweg,52.3649431,4.9478662,tram
+Soembawastraat,52.3621442,4.9433884,tram
+Rijksmuseum,52.3612917,4.8863802,tram
+Hoogte Kadijk,52.3666491,4.9242477,tram
+Rietlandpark,52.372928,4.9344011,tram
+De Wittenkade,52.3831444,4.877086,tram
+Nassaukade,52.3810685,4.8791525,tram
+Van Limburg Stirumplein,52.3842946,4.8751351,tram
+Admiraal Helfrichstraat,52.3694429,4.8438216,tram
+Doctor H. Colijnstraat,52.376923,4.8068137,tram
+Jan Tooropstraat,52.3714269,4.8381019,tram
+Jan Voermanstraat,52.3697121,4.8378389,tram
+Jan van Galenstraat,52.3732337,4.8350051,tram
+Mercatorplein,52.3702349,4.8514871,tram
+Pontanusstraat,52.3659034,4.9275974,tram
+Zeeburgerdijk,52.3658377,4.9325945,tram
+De Boelelaan/VU,52.3351971,4.8663865,tram
+Haarlemmermeerstation,52.3490455,4.8575004,tram
+Baden Powellweg,52.3565018,4.7917476,tram
+Corantijnstraat,52.3615937,4.853247,tram
+Hoekenes,52.3580819,4.7995669,tram
+Osdorpplein West,52.3595388,4.8032041,tram
+Postjesweg,52.3638557,4.8531487,tram
+Osdorpplein Oost,52.358636,4.8080582,tram
+Minervaplein,52.346695,4.8720137,tram
+Olympiaplein,52.3463735,4.8666421,tram
+Olympiaweg,52.3452686,4.8586416,tram
+Erasmusgracht,52.3763312,4.8469734,tram
+W. Schoutenstraat,52.3669952,4.852596,tram
+W. Schoutenstraat,52.3673886,4.8523612,tram
+Ouderkerkerlaan,52.2961495,4.8674092,tram
+Sacharovlaan,52.2825699,4.8327624,tram
+Westwijk,52.2743545,4.8305341,tram
+Westlandgracht,52.3515947,4.8450157,tram
+Aan de Zoom,52.2488297,4.8116419,tram
+Uilenstede,52.3219463,4.8692108,tram
+Bob Haarmslaan,52.3693154,4.9682901,tram
+Gein,52.296338,4.9890129,metro
+Reigersbos,52.2956478,4.9744218,metro
+Gaasperplas,52.3113175,4.9843223,metro
+Ganzenhoef,52.3230792,4.9735502,metro
+Kraaiennest,52.3170313,4.9791233,metro
+Venserpolder,52.3267669,4.9463398,metro
+Strandvliet,52.3185355,4.9413557,metro
+Bullewijk,52.3066107,4.9522364,metro
+Heemstedestraat,52.3524713,4.8343026,metro
+Verrijn Stuartweg,52.328939,4.9662522,metro
+Spaklerweg,52.3399595,4.9210115,metro
+Wibautstraat,52.3544624,4.9120253,metro
+Nieuwmarkt,52.3713176,4.9008788,metro
+Henk Sneevlietweg,52.3464029,4.8345025,metro
+Isolatorweg,52.3951713,4.8507911,metro
+Postjesweg,52.3642921,4.8339612,metro
+A. J. Ernststraat,52.3325889,4.86881,tram
+Amstelveen Stadshart,52.3013177,4.8671267,tram
+Amstelveen Stadshart,52.3013453,4.867149,tram
+Onderuit,52.3082083,4.872442,tram
+Onderuit,52.308208,4.8725812,tram
+Van Boshuizenstraat,52.3248966,4.8690235,tram
+Zonnestein,52.311833,4.8723724,tram
+Amsterdamseweg,52.3156718,4.855406,tram
+Jollenpad,52.3352719,4.8543795,tram
+Koenenkade,52.3305598,4.8560952,tram
+Noorddammerlaan,52.292425,4.8403296,tram
+Kalfjeslaan,52.3218182,4.8565037,tram
+Molenwerf,52.385873,4.8467105,tram
+Oostpoort,52.357015,4.9272548,tram
+Oostpoort,52.3574304,4.9268761,tram
+De Pijp,52.3526769,4.8901771,tram
+Marie Heinekenplein,52.3570037,4.8907033,tram
+Muntplein,52.3662653,4.8931342,tram
+Muntplein,52.3659135,4.8930838,tram
+Marie Heinekenplein,52.3571177,4.8907718,tram
+Jan Wilsbrug,52.3442966,4.8509865,tram
+Remise Karperweg,52.3465483,4.8520759,tram
+Station Amstelveen,52.3013966,4.8477382,tram
+Handweg,52.2994491,4.8453672,tram
+Haarlemmermeerstation,52.3493953,4.8563405,tram
+Kalfjeslaan,52.3214358,4.8564951,tram
+Van Nijenrodeweg,52.3274177,4.8565395,tram
+Molenweg,52.3085646,4.8506593,tram
+Karselaan,52.3109438,4.8507838,tram
+Karselaan,52.3115129,4.851035,tram
+Bovenkerk,52.2908393,4.8391034,tram
+Bovenkerk,52.2910359,4.8391796,tram
+Leidseplein,52.3632085,4.8810698,tram
+Station Zuid,52.3408165,4.8731849,tram
+Zuid,52.3392032,4.8746127,metro
+Station Sloterdijk,52.3890161,4.838877,metro
+Station RAI,52.3377124,4.8893261,metro
+Prinsengracht,52.3620972,4.898949,tram
+Prinsengracht,52.3621338,4.8989773,tram
+Centraal Station,52.3774316,4.9009578,metro
+Sniep,52.3364299,4.9697229,tram
+Amstelstation,52.347445,4.9178945,tram
+Europaplein,52.3416064,4.8914727,metro
+De Pijp,52.3539754,4.8906926,metro
+Vijzelgracht,52.3608169,4.8911646,metro
+Noorderpark,52.3889316,4.9187004,metro
+Noord,52.4019931,4.9323589,metro
+Frederiksplein,52.3596835,4.9000102,tram
+Vijzelgracht,52.3594772,4.8925358,tram
+Diemerbrug,52.3382375,4.9613021,tram
+De Clercqstraat,52.3706445,4.8703967,tram
+Sportlaan,52.2897815,4.8632971,tram
+Sportlaan,52.2904199,4.8639055,tram
+Kronenburg,52.3159021,4.8706653,tram
+Kronenburg,52.3158787,4.8705431,tram
+Zonnestein,52.3117915,4.8722536,tram
+Amstelstation,52.3474274,4.9178096,tram
+Maasstraat,52.3470662,4.8954127,tram
+Maasstraat,52.3468163,4.8947303,tram
+Centraal Station,52.3783193,4.8992878,tram
+Centraal Station,52.3782813,4.8991546,tram
+Centraal Station,52.378303,4.8992178,tram
+Centraal Station,52.3783416,4.8993575,tram
+Aan de Zoom,52.2492571,4.8119553,tram
+Uithoorn Station,52.2432788,4.8211369,tram
+Uithoorn Station,52.2429496,4.8216082,tram
+Uithoorn Centrum,52.2350153,4.8345317,tram
+Uithoorn Centrum,52.2350733,4.8346111,tram
+Mercatorplein,52.3704058,4.8500681,tram
+Mercatorplein,52.3706818,4.8499792,tram
+Bos en Lommerplein,52.3771987,4.8464503,tram
+Jan Pieter Heijestraat,52.360364,4.8657924,tram
+Hoofdweg,52.3642479,4.853975,tram
+Lutmastraat,52.3517731,4.903158,tram
+Vijzelgracht,52.3593327,4.8923379,tram
+Hogeweg,52.3534088,4.9310414,tram
+Roelof Hartplein,52.3527563,4.8828562,tram
+Roelof Hartplein,52.3526434,4.8820747,tram
+Marnixplein,52.3778833,4.878697,tram
+Koningsplein,52.3677211,4.8893472,tram
+Museumplein,52.3586751,4.8804736,tram
+Centraal Station,52.3791977,4.9009058,metro
+Museumplein,52.3586778,4.8805299,tram
+Parklaan,52.3042535,4.8504873,tram
+Korte 's-Gravesandestraat,52.3624363,4.9141489,tram
+v. Hilligaertstraat,52.3493102,4.8914418,tram
+Parklaan,52.3052105,4.850538,tram
+Paleisstraat,52.3719007,4.8906411,tram
+Vennepluimstraat,52.3580579,4.9899502,tram
+Oranje Nassaulaan,52.3549726,4.8553753,tram
+Molukkenstraat,52.3615386,4.9388387,tram
+Dam,52.3747581,4.8917191,tram
+Centraal Station,52.3790052,4.903277,tram
+v. Hilligaertstraat,52.3497109,4.8914559,tram
+Parnassusweg,52.3366289,4.8688138,tram
+Slotermeerlaan,52.3757902,4.8179757,tram
+Burgemeester Van Leeuwenlaan,52.3763175,4.8129201,tram
+Albert Cuypstraat,52.3572692,4.8994975,tram
+Buiteneilandlaan,52.3554265,5.0184345,tram
+Buiteneilandlaan,52.3556613,5.0193049,tram
+Molukkenstraat,52.361567,4.939266,tram
+Roetersstraat,52.3625747,4.9109957,tram
+Roetersstraat,52.3620879,4.9112171,tram
+Plantage Parklaan,52.3675402,4.9094614,tram
+Artis/Holocaustmuseum,52.3671549,4.9124417,tram
+Parnassusweg,52.3369626,4.8688132,tram
+Czaar Peterstraat,52.3690549,4.9277776,tram
+Czaar Peterstraat,52.3692852,4.928094,tram
+Station Sloterdijk,52.3886096,4.8384407,tram
+Lelylaan,52.357831,4.8343697,metro
+Franz Kafkastraat,52.3566,5.0258001,tram
+Franz Kafkastraat,52.3566607,5.0266023,tram
+Centrumeiland,52.3534168,5.0121442,tram
+Centrumeiland,52.3535537,5.0124506,tram
+Station Diemen Zuid,52.3301076,4.9559659,metro
+Sniep,52.3370028,4.9695827,tram

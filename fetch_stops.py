@@ -11,10 +11,10 @@ def fetch_stops():
     overpass_url = "https://overpass-api.de/api/interpreter"
     
     overpass_query = """
-    [out:json];
+    [out:json][timeout:60];
     (
-      node["railway"="tram"](52.2,4.6,52.5,5.1);
-      node["railway"="subway_entrance"](52.2,4.6,52.5,5.1);
+    node["railway"="tram_stop"](52.2,4.6,52.5,5.1);
+    node["railway"="station"]["station"="subway"](52.2,4.6,52.5,5.1);
     );
     out;
     """
@@ -44,12 +44,12 @@ def fetch_stops():
                 'name': element.get('tags', {}).get('name', 'Unknown'),
                 'lat': element['lat'],
                 'lon': element['lon'],
-                'type': element.get('tags', {}).get('railway', 'Unknown')
+                'type': 'metro' if element.get('tags', {}).get('station') == 'subway' else 'tram',
             })
 
     df = pd.DataFrame(stops)
     df = df.drop_duplicates(subset=['lat', 'lon'])
-    
+    print(df['type'].value_counts())
     out_file = RAW / "tram_stops.csv"
     df.to_csv(out_file, index=False)
     print(f"Successfully saved {len(df)} stops to {out_file}")

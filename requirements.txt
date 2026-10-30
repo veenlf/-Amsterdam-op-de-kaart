@@ -1,9 +1,7 @@
 pandas>=2.0
 openpyxl>=3.1
 streamlit>=1.35
-plotly>=5.20
-matplotlib>=3.8
+plotly>=5.24
 scipy>=1.12
 statsmodels>=0.14.0
-geopy
-statsmodels>=0.14.0
+requests
