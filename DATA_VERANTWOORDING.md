@@ -8,3 +8,15 @@ Koppeling: geen gemeenschappelijke sleutel; ruimtelijke koppeling via coördinat
 Wat misging: eerste Overpass-query (railway=tram) leverde geen haltes op maar baanpunten/alleen metro-ingangen; aangepast naar railway=tram_stop en station=subway.
 
 Beperkingen: vraagprijzen, één snapshot, hemelsbrede afstand.
+
+Bron 3: CBS Woningvoorraad
+
+Endpoint: https://opendata.cbs.nl/ODataApi/OData/83704NED
+
+Fetched via requests.get() in fetch_cbs.py on [date].
+
+Filtered to Regio = Amsterdam, years 2012–2026.
+
+Joined to Funda at the gemeente level (Amsterdam), producing N rows for statistical analysis.
+
+Limitation: CBS data is gemeente, not buurt-level, so spatial correlation with Funda buurten is approximate.
