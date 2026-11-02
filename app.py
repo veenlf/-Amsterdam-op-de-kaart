@@ -265,6 +265,9 @@ with tab3:
 
     # 4) Walking vs cycling
     st.markdown("### Walking vs. cycling")
+    stopfilter = st.slider("amount of stops u wanna see (km)", 0, p_min, p_max, 20)
+
+    
     mode = st.radio("Travel mode", ["Walking (stops within 500 m)", "Cycling (stops within 2 km)"], horizontal=True)
     col = "stops_500m" if mode.startswith("Walking") else "stops_2km"
     st.plotly_chart(px.scatter(plot_df, x=col, y="price_per_m2", opacity=0.3, trendline="ols",
