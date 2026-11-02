@@ -106,7 +106,7 @@ with tab1:
     with col2:
         st.markdown("### Top 10 Most Expensive Neighbourhoods")
         top_buurten = (
-            plot_df.groupby('Street Address')['price_per_m2']
+            plot_df.groupby('Buurt')['price_per_m2']
             .agg(['median', 'count'])
             .reset_index()
         )
