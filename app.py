@@ -95,7 +95,10 @@ with tab1:
     plot_df = fun.dropna(subset=['price_per_m2', 'Buurt'])
     
     col1, col2 = st.columns(2)
-    
+    st.metric(
+    label="price_per_m2",
+    value='price',
+)
     with col1:
         st.markdown("### Distribution per Neighbourhood")
         fig = px.box(plot_df, x="Buurt", y="price_per_m2", 
@@ -265,7 +268,7 @@ with tab3:
 
     # 4) Walking vs cycling
     st.markdown("### Walking vs. cycling")
-    stopfilter = st.slider("amount of stops u wanna see (km)", 0, p_min, p_max, 20)
+    stopfilter = st.stopfilter.slider("amount of stops (km)", 0.1, d_max, d_max, 0.1)
 
     
     mode = st.radio("Travel mode", ["Walking (stops within 500 m)", "Cycling (stops within 2 km)"], horizontal=True)
