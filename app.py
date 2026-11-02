@@ -95,10 +95,7 @@ with tab1:
     plot_df = fun.dropna(subset=['price_per_m2', 'Buurt'])
     
     col1, col2 = st.columns(2)
-    st.metric(
-    label="price_per_m2",
-    value='price',
-)
+
     with col1:
         st.markdown("### Distribution per Neighbourhood")
         fig = px.box(plot_df, x="Buurt", y="price_per_m2", 
@@ -123,7 +120,10 @@ with tab1:
         st.plotly_chart(fig_top, use_container_width=True)
 
     st.dataframe(plot_df[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
-
+    st.metric(
+    label="price_per_m2",
+    value='price',
+    )
 
 # TAB 2: Map
 
