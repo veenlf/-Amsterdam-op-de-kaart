@@ -106,7 +106,7 @@ with tab1:
     with col2:
         st.markdown("### Top 10 Most Expensive Neighbourhoods")
         top_buurten = (
-            plot_df.groupby('Buurt')['price_per_m2']
+            plot_df.groupby('Street Address')['price_per_m2']
             .agg(['median', 'count'])
             .reset_index()
         )
@@ -120,8 +120,7 @@ with tab1:
         st.plotly_chart(fig_top, use_container_width=True)
 
     st.dataframe(plot_df[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
-    st.dataframe(plot_df[['Vraagprijs']].head.max(100))
-    
+
 
 # TAB 2: Map
 
