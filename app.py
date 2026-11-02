@@ -122,7 +122,7 @@ with tab1:
     st.dataframe(plot_df[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
     st.metric(
     label="price_per_m2",
-    value= fun["price_per_m2"].mean()round(0),
+    value= fun["price_per_m2"].mean().round(0),
     )
 
 # TAB 2: Map
