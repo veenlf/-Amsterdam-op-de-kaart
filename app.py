@@ -120,6 +120,8 @@ with tab1:
         st.plotly_chart(fig_top, use_container_width=True)
 
     st.dataframe(plot_df[['Street Address', 'Vraagprijs', 'Wonen', 'price_per_m2', 'Buurt']].head(100))
+    st.dataframe(plot_df[['Vraagprijs']].head.max(100))
+    
 
 # TAB 2: Map
 
